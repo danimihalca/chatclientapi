@@ -13,6 +13,7 @@ class ChatClient: public IChatClient
 public:
     ChatClient();
     void initialize();
+    void setNewMessageCallback(newMessageCallback callback);
     void connect(const std::string& uri);
     void startService();
     void sendMessage(const std::string& message);

@@ -12,6 +12,11 @@ void ChatClientImpl::initialize()
     m_client.start_perpetual();
 }
 
+void ChatClientImpl::setNewMessageCallback(newMessageCallback callback)
+{
+    m_newMessageCB = callback;
+}
+
 void ChatClientImpl::connect(const std::string& uri)
 {
     websocketpp::lib::error_code errorCode;
@@ -112,6 +117,8 @@ void ChatClientImpl::onClose(websocketpp::connection_hdl)
 void ChatClientImpl::onMessage(websocketpp::connection_hdl,asioClient::message_ptr msg)
 {
     m_client.get_alog().write(websocketpp::log::alevel::app, "Message received!!");
-    m_client.get_alog().write(websocketpp::log::alevel::app, "Message:" + msg->get_payload());
-    std::cout<<"MESSAGE: "<<msg->get_payload()<<std::endl;
+    std::string message = msg->get_payload();
+    m_client.get_alog().write(websocketpp::log::alevel::app, "Message:" + message);
+//    std::cout<<"MESSAGE: "<<msg->get_payload()<<std::endl;
+    m_newMessageCB(message.c_str());
 }

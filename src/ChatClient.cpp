@@ -10,6 +10,11 @@ void ChatClient::initialize()
     p_impl->initialize();
 }
 
+void ChatClient::setNewMessageCallback(newMessageCallback callback)
+{
+    p_impl->setNewMessageCallback(callback);
+}
+
 void ChatClient::connect(const std::string& uri)
 {
     p_impl->connect(uri);

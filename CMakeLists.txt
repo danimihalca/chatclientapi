@@ -13,7 +13,8 @@ INCLUDE_DIRECTORIES($ENV{WEBSOCKETPP_LIBRARY_PATH})
 INCLUDE_DIRECTORIES($ENV{ASIO_LIBRARY_PATH})
 INCLUDE_DIRECTORIES(inc)
 
-SET (HEADER_FILES inc/IChatClient.h
+SET (HEADER_FILES inc/common.h
+                  inc/IChatClient.h
                   inc/ChatClient.h
                   inc/ChatClientImpl.h)
 SET (SOURCE_FILES src/ChatClient.cpp
@@ -25,7 +26,8 @@ TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${LIBRARIES})
 
 
 SET (PUBLIC_HEADERS ${PROJECT_SOURCE_DIR}/inc/IChatClient.h
-                    ${PROJECT_SOURCE_DIR}/inc/ChatClient.h)
+                    ${PROJECT_SOURCE_DIR}/inc/ChatClient.h
+                    ${PROJECT_SOURCE_DIR}/inc/common.h)
 SET(HEADER_DESTINATION_PATH $ENV{DEPLOY_PATH}/inc/${PROJECT_NAME})
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Android")
