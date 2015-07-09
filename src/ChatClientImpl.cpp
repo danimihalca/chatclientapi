@@ -1,11 +1,15 @@
 #include "ChatClientImpl.h"
 
+#ifdef ANDROID
+#include "android/log.h"
+#endif
 
 void ChatClientImpl::initialize()
 {
     m_client.init_asio();
     setHandlers();
     setLogAccessChannels();
+    m_client.start_perpetual();
 }
 
 void ChatClientImpl::connect(const std::string& uri)
@@ -20,15 +24,14 @@ void ChatClientImpl::connect(const std::string& uri)
 
     m_client.connect(connection);
     m_connectionHandle = connection->get_handle();
-//    m_client.get_alog().write(websocketpp::log::alevel::app, "Connecting...");
-//    m_serviceThread = websocketpp::lib::thread(&asioClient::run, &m_client);
+    m_client.get_alog().write(websocketpp::log::alevel::app, "Connecting...");
 
 
 }
 
 void ChatClientImpl::startService()
 {
-    m_client.run();
+    p_serviceThread = websocketpp::lib::make_shared<websocketpp::lib::thread>(&asioClient::run, &m_client);
 }
 
 
@@ -39,7 +42,7 @@ void ChatClientImpl::sendMessage(const std::string& message)
     {
         sleep(1);
     }
-//    m_client.get_alog().write(websocketpp::log::alevel::app, "Sending Message: \"" + message +'\"');
+    m_client.get_alog().write(websocketpp::log::alevel::app, "Sending Message: \"" + message +'\"');
     websocketpp::lib::error_code errorCode;
 
     m_client.send(m_connectionHandle, message, websocketpp::frame::opcode::text, errorCode);
@@ -51,24 +54,23 @@ void ChatClientImpl::sendMessage(const std::string& message)
 
 void ChatClientImpl::closeConnection()
 {
-    if (!m_client.stopped())
-    {
-        m_client.stop();
-    }
-//    if (m_serviceThread.joinable())
-//    {
-//        m_serviceThread.join();
-//    }
-//    m_serviceThread.join();
+    m_connected = false;
+    websocketpp::lib::error_code errorCode;
+    m_client.close(m_connectionHandle,websocketpp::close::status::normal,"disconnected");
 }
 
-//ChatClientImpl::~ChatClientImpl()
-//{
-//    if (!m_client.stopped())
-//    {
-//        closeConnection();
-//    }
-//}
+ChatClientImpl::~ChatClientImpl()
+{
+    m_client.stop_perpetual();
+    if (m_connected)
+    {
+        closeConnection();
+    }
+    if (p_serviceThread->joinable())
+    {
+        p_serviceThread->join();
+    }
+}
 
 void ChatClientImpl::setHandlers()
 {
@@ -85,9 +87,9 @@ void ChatClientImpl::setHandlers()
 void ChatClientImpl::setLogAccessChannels()
 {
     m_client.clear_access_channels(websocketpp::log::alevel::all);
-//    m_client.set_access_channels(websocketpp::log::alevel::connect);
-//    m_client.set_access_channels(websocketpp::log::alevel::disconnect);
-//    m_client.set_access_channels(websocketpp::log::alevel::app);
+    m_client.set_access_channels(websocketpp::log::alevel::connect);
+    m_client.set_access_channels(websocketpp::log::alevel::disconnect);
+    m_client.set_access_channels(websocketpp::log::alevel::app);
 }
 
 void ChatClientImpl::onOpen(websocketpp::connection_hdl)

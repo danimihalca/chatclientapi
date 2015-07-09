@@ -15,7 +15,7 @@ public:
     void startService();
     void sendMessage(const std::string& message);
     void closeConnection();
-//    ~ChatClientImpl();
+    ~ChatClientImpl();
 
 private:
     void setHandlers();
@@ -28,8 +28,7 @@ private:
     asioClient m_client;
     websocketpp::connection_hdl m_connectionHandle;
     bool m_connected = false;
-//    websocketpp::lib::thread m_serviceThread;
-
+    std::shared_ptr<websocketpp::lib::thread> p_serviceThread;
 };
 
 
