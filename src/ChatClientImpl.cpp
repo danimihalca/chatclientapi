@@ -104,6 +104,11 @@ void ChatClientImpl::startService()
 
 void ChatClientImpl::sendMessage(const std::string& message)
 {
+    data.index -=3;
+    memset(&data.buf[LWS_SEND_BUFFER_PRE_PADDING],0,MAX_ECHO_PAYLOAD);
+    memcpy(&data.buf[LWS_SEND_BUFFER_PRE_PADDING], message.c_str(),strlen(message.c_str()));
+    data.len = strlen(message.c_str());
+//    data.len = sprintf((char *)&data.buf[LWS_SEND_BUFFER_PRE_PADDING], "hello from libwebsockets-test-echo client pid %d index %d\n", getpid(), pss->index++);
     libwebsocket_callback_on_writable_all_protocol(&m_protocols.get()[0]);
     //    int n = libwebsocket_service(m_context, 10);
     //    lwsl_notice("libwebsocket_service :%d\n",n);
@@ -161,11 +166,15 @@ int callback2(libwebsocket_context* context, libwebsocket* wsi, libwebsocket_cal
 
         case LWS_CALLBACK_CLIENT_RECEIVE:
             lwsl_notice("Client RX: %s", (char *)in);
+            if (((ChatClientImpl*) pss->client)->m_newMessageCB != nullptr)
+            {
+                ((ChatClientImpl*) pss->client)->m_newMessageCB((char *)in);
+            }
             break;
 
         case LWS_CALLBACK_CLIENT_WRITEABLE:
             /* we will send our packet... */
-            pss->len = sprintf((char *)&pss->buf[LWS_SEND_BUFFER_PRE_PADDING], "hello from libwebsockets-test-echo client pid %d index %d\n", getpid(), pss->index++);
+//            pss->len = sprintf((char *)&pss->buf[LWS_SEND_BUFFER_PRE_PADDING], "hello from libwebsockets-test-echo client pid %d index %d\n", getpid(), pss->index++);
             lwsl_notice("Client TX: %s", &pss->buf[LWS_SEND_BUFFER_PRE_PADDING]);
             n = libwebsocket_write(wsi, &pss->buf[LWS_SEND_BUFFER_PRE_PADDING], pss->len, LWS_WRITE_TEXT);
             if (n < 0) {

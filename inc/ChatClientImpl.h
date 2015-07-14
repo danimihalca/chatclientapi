@@ -39,7 +39,6 @@ private:
 private:
     void run();
 private:
-    newMessageCallback m_newMessageCB;
     struct libwebsocket_context *m_context;
     std::unique_ptr<struct libwebsocket_protocols> m_protocols;
     struct libwebsocket *wsi;
@@ -47,6 +46,7 @@ private:
     std::thread m_thread;
     bool m_running;
 public:
+    newMessageCallback m_newMessageCB = nullptr;
     bool m_connected = false;
 };
 
