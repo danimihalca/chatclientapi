@@ -4,8 +4,11 @@
 #include <string>
 #include <libwebsockets.h>
 #include <memory>
-#include "common.h"
 #include <thread>
+
+#include "common.h"
+
+
 static const int MAX_ECHO_PAYLOAD = 1400;
 
 class ChatClientImpl;
@@ -40,9 +43,10 @@ private:
     void run();
 private:
     struct libwebsocket_context *m_context;
-    std::unique_ptr<struct libwebsocket_protocols> m_protocols;
+    struct libwebsocket_protocols *m_protocols;
     struct libwebsocket *wsi;
     struct per_session_data__echo data;
+    struct lws_context_creation_info m_info;
     std::thread m_thread;
     bool m_running;
 public:
@@ -51,9 +55,5 @@ public:
 };
 
 
-int callback2(struct libwebsocket_context *context,
-              struct libwebsocket *wsi,
-              enum libwebsocket_callback_reasons reason, void *user,
-              void *in, size_t len);
 
 #endif //CHATCLIENTIMPL_H

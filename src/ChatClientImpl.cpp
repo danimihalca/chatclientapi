@@ -23,45 +23,53 @@ void ChatClientImpl::initialize()
 
     std::function<callback_function> f =
             std::bind(&ChatClientImpl::callback, this, _1, _2, _3, _4, _5, _6);
-    m_protocols.reset( new struct libwebsocket_protocols[2]
-            /* first protocol must always be HTTP handler */
-    {
-        {
-            "default",		/* name */
-            //            f.target<int (struct libwebsocket_context *,
-            //                           struct libwebsocket *,
-            //                           enum libwebsocket_callback_reasons , void *,
-            //                           void *, size_t)>(),		/* callback */
-            //                    sizeof(struct per_session_data__echo)	/* per_session_data_size */
-            //            f.target<callback_function>(),		/* callback */
-            callback2,
-                    sizeof(struct per_session_data__echo)	/* per_session_data_size */
-        },
-        {
-            NULL, NULL, 0		/* End of list */
-        }
-    });
+    m_protocols = new struct libwebsocket_protocols[2];
+    m_protocols[0].name= "default";
+    m_protocols[0].callback = callback2;
+    m_protocols[0].per_session_data_size = sizeof(struct per_session_data__echo);
+    m_protocols[0].rx_buffer_size =LWS_SEND_BUFFER_PRE_PADDING + MAX_ECHO_PAYLOAD + LWS_SEND_BUFFER_POST_PADDING ;
+
+    m_protocols[1].name= NULL;
+    m_protocols[1].callback = NULL;
+    m_protocols[1].per_session_data_size = 0;
+
+//            /* first protocol must always be HTTP handler */
+//    {
+//        {
+//            "default",		/* name */
+//            //            f.target<int (struct libwebsocket_context *,
+//            //                           struct libwebsocket *,
+//            //                           enum libwebsocket_callback_reasons , void *,
+//            //                           void *, size_t)>(),		/* callback */
+//            //                    sizeof(struct per_session_data__echo)	/* per_session_data_size */
+//            //            f.target<callback_function>(),		/* callback */
+//            callback2,
+//                    sizeof(struct per_session_data__echo)	/* per_session_data_size */
+//        },
+//        {
+//            NULL, NULL, 0		/* End of list */
+//        }
+//    };
 
 
 
-    struct lws_context_creation_info info;
-    memset(&info, 0, sizeof info);
+    memset(&m_info, 0, sizeof m_info);
 
-    info.port = CONTEXT_PORT_NO_LISTEN;
-    info.iface = NULL;
-    info.protocols = m_protocols.get();
+    m_info.port = CONTEXT_PORT_NO_LISTEN;
+    m_info.iface = NULL;
+    m_info.protocols = m_protocols;
 #ifndef LWS_NO_EXTENSIONS
-    info.extensions = libwebsocket_get_internal_extensions();
+    m_info.extensions = libwebsocket_get_internal_extensions();
 #endif
     if (use_ssl) {
         //        info.ssl_cert_filepath = LOCAL_RESOURCE_PATH"/libwebsockets-test-server.pem";
         //        info.ssl_private_key_filepath = LOCAL_RESOURCE_PATH"/libwebsockets-test-server.key.pem";
     }
-    info.gid = -1;
-    info.uid = -1;
-    info.options = 0;
+    m_info.gid = -1;
+    m_info.uid = -1;
+    m_info.options = 0;
 
-    m_context = libwebsocket_create_context(&info);
+    m_context = libwebsocket_create_context(&m_info);
 }
 
 void ChatClientImpl::setNewMessageCallback(newMessageCallback callback)
@@ -73,7 +81,9 @@ void ChatClientImpl::connect(const std::string& uri)
 {
     data.index = 73;
     data.client = this;
-    unsigned int port = 9003;
+    memset(data.buf,0,sizeof(data.buf));
+    data.len = 0;
+    unsigned int port = 9004;
     int use_ssl = 0;
     lwsl_notice("Client connecting to %s:%u....\n", uri.c_str(), port);
     /* we are in client mode */
@@ -83,11 +93,18 @@ void ChatClientImpl::connect(const std::string& uri)
     wsi = libwebsocket_client_connect_extended(m_context, uri.c_str(),
                                                port, use_ssl, "/", uri.c_str(),
                                                "origin", NULL, -1,&data);
+//    wsi = libwebsocket_client_connect(m_context, uri.c_str(),
+//                                               port, use_ssl, "/", uri.c_str(),
+//                                               "origin", NULL, -1);
     if (!wsi) {
         lwsl_err("Client failed to connect to %s:%u\n", uri.c_str(), port);
     }
     lwsl_notice("Client still connecting to %s:%u\n", uri.c_str(), port);
-    //    while (!m_connected)
+//    wsi->u.ws.rx_user_buffer = malloc(n);
+//            if (!wsi->u.ws.rx_user_buffer) {
+//                    lwsl_err("Out of Mem allocating rx buffer %d\n", n);
+//            }
+            //    while (!m_connected)
     //    {
     //        int n = libwebsocket_service(m_context, 10);
     //        lwsl_notice("libwebsocket_service :%d\n",n);
@@ -109,7 +126,7 @@ void ChatClientImpl::sendMessage(const std::string& message)
     memcpy(&data.buf[LWS_SEND_BUFFER_PRE_PADDING], message.c_str(),strlen(message.c_str()));
     data.len = strlen(message.c_str());
 //    data.len = sprintf((char *)&data.buf[LWS_SEND_BUFFER_PRE_PADDING], "hello from libwebsockets-test-echo client pid %d index %d\n", getpid(), pss->index++);
-    libwebsocket_callback_on_writable_all_protocol(&m_protocols.get()[0]);
+    libwebsocket_callback_on_writable_all_protocol(&m_protocols[0]);
     //    int n = libwebsocket_service(m_context, 10);
     //    lwsl_notice("libwebsocket_service :%d\n",n);
 
@@ -139,7 +156,7 @@ ChatClientImpl::~ChatClientImpl()
 
 int ChatClientImpl::callback(libwebsocket_context* context, libwebsocket* wsi, libwebsocket_callback_reasons reason, void* user, void* in, size_t len)
 {
-
+    return 0;
 }
 
 void ChatClientImpl::run()
@@ -171,7 +188,9 @@ int callback2(libwebsocket_context* context, libwebsocket* wsi, libwebsocket_cal
                 ((ChatClientImpl*) pss->client)->m_newMessageCB((char *)in);
             }
             break;
-
+      case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
+          lwsl_notice("Client ERROR");
+          break;
         case LWS_CALLBACK_CLIENT_WRITEABLE:
             /* we will send our packet... */
 //            pss->len = sprintf((char *)&pss->buf[LWS_SEND_BUFFER_PRE_PADDING], "hello from libwebsockets-test-echo client pid %d index %d\n", getpid(), pss->index++);
