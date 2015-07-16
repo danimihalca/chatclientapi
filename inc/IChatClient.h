@@ -5,7 +5,7 @@
 
 #include "common.h"
 
-class DLL_VISIBILITY IChatClient
+class LIBRARY_VISIBILITY IChatClient
 {
 public:
     virtual void initialize() = 0;

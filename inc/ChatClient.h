@@ -7,7 +7,7 @@
 
 class ChatClientImpl;
 
-class DLL_VISIBILITY ChatClient: public IChatClient
+class LIBRARY_VISIBILITY ChatClient: public IChatClient
 {
 
 public:
