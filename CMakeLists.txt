@@ -7,7 +7,7 @@ add_definitions(-DBUILDING_LIBRARY)
 find_package (Threads)
 
 INCLUDE_DIRECTORIES(inc)
-INCLUDE_DIRECTORIES(${HEADER_INSTALL_PATH})
+INCLUDE_DIRECTORIES(${HEADERS_INSTALL_PATH})
 
 SET (HEADER_FILES inc/common.h
                   inc/IChatClient.h
