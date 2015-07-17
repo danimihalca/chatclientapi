@@ -83,7 +83,7 @@ void ChatClientImpl::connect(const std::string& uri)
     data.client = this;
     memset(data.buf,0,sizeof(data.buf));
     data.len = 0;
-    unsigned int port = 9004;
+    unsigned int port = 9003;
     int use_ssl = 0;
     lwsl_notice("Client connecting to %s:%u....\n", uri.c_str(), port);
     /* we are in client mode */
