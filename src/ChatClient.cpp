@@ -1,7 +1,7 @@
 #include "ChatClient.h"
 #include "ChatClientImpl.h"
 
-ChatClient::ChatClient():p_impl(new ChatClientImpl())
+ChatClient::ChatClient() : p_impl(new ChatClientImpl())
 {
 }
 
@@ -15,9 +15,9 @@ void ChatClient::setNewMessageCallback(newMessageCallback callback)
     p_impl->setNewMessageCallback(callback);
 }
 
-void ChatClient::connect(const std::string& uri)
+void ChatClient::connect(const std::string& address, uint16_t port)
 {
-    p_impl->connect(uri);
+    p_impl->connect(address, port);
 }
 
 void ChatClient::startService()

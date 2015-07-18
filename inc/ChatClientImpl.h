@@ -9,43 +9,43 @@
 #include "common.h"
 
 
-static const int MAX_ECHO_PAYLOAD = 1400;
+static const int MAX_PAYLOAD = 1400;
 
 class ChatClientImpl;
 
-struct per_session_data__echo
+struct session_data
 {
-    unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + MAX_ECHO_PAYLOAD + LWS_SEND_BUFFER_POST_PADDING];
+    unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + MAX_PAYLOAD +
+                      LWS_SEND_BUFFER_POST_PADDING];
     unsigned int len;
-    unsigned int index;
-    ChatClientImpl* client;
 };
 
 class ChatClientImpl
 {
 
 public:
+    ChatClientImpl();
     void initialize();
     void setNewMessageCallback(newMessageCallback callback);
-    void connect(const std::string& uri);
+    void connect(const std::string& address, uint16_t port);
     void startService();
     void sendMessage(const std::string& message);
     void closeConnection();
     ~ChatClientImpl();
 
 private:
-    int callback(struct libwebsocket_context *context,
-                  struct libwebsocket *wsi,
-                  enum libwebsocket_callback_reasons reason, void *user,
-                  void *in, size_t len);
+    int callback(struct libwebsocket_context* context,
+                 struct libwebsocket* wsi,
+                 enum libwebsocket_callback_reasons reason, void* user,
+                 void* in, size_t len);
 
 private:
     void run();
+
 private:
-    struct libwebsocket_context *m_context;
-    struct libwebsocket_protocols *m_protocols;
-    struct libwebsocket *wsi;
-    struct per_session_data__echo data;
+    struct libwebsocket_context* m_context;
+    struct libwebsocket_protocols m_protocols[2];
+    struct session_data data;
     struct lws_context_creation_info m_info;
     std::thread m_thread;
     bool m_running;

@@ -7,14 +7,14 @@
 
 class ChatClientImpl;
 
-class LIBRARY_VISIBILITY ChatClient: public IChatClient
+class LIBRARY_VISIBILITY ChatClient : public IChatClient
 {
 
 public:
     ChatClient();
     void initialize();
     void setNewMessageCallback(newMessageCallback callback);
-    void connect(const std::string& uri);
+    void connect(const std::string& address, uint16_t port);
     void startService();
     void sendMessage(const std::string& message);
     void closeConnection();
