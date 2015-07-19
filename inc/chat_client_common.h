@@ -1,9 +1,6 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <libwebsockets.h>
-
-
 #if defined _WIN32 || defined __CYGWIN__ || defined __MINGW32__
   #ifdef BUILDING_LIBRARY
     #ifdef __GNUC__
@@ -26,14 +23,4 @@
   #endif
 #endif
 
-typedef void (*newMessageCallback)(const char*);
-
-LIBRARY_VISIBILITY int callback2(struct libwebsocket_context *      context,
-                                 struct libwebsocket *              wsi,
-                                 enum libwebsocket_callback_reasons reason,
-                                 void *                             user,
-                                 void *                             in,
-                                 size_t                             len);
-
 #endif // COMMON_H
-

@@ -3,17 +3,18 @@
 
 #include <string>
 
-#include "common.h"
+#include "chat_client_common.h"
+
+class IChatClientListener;
 
 class LIBRARY_VISIBILITY IChatClient
 {
 public:
-    virtual void initialize() = 0;
-    virtual void setNewMessageCallback(newMessageCallback callback) = 0;
     virtual void connect(const std::string& address, uint16_t port) = 0;
-    virtual void startService() = 0;
     virtual void sendMessage(const std::string& message) = 0;
-    virtual void closeConnection() = 0;
+    virtual void disconnect() = 0;
+    virtual void addChatClientListener(IChatClientListener* listener) = 0;
+    virtual void removeChatClientListener(IChatClientListener* listener) = 0;
     virtual ~IChatClient()
     {
     }
