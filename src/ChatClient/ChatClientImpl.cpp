@@ -6,11 +6,12 @@ ChatClientImpl::ChatClientImpl() :
     p_websocketClient(new WebsocketClient()),
     m_clientListeners()
 {
+    p_websocketClient->addWebsocketClientListener(this);
 }
 
 ChatClientImpl::~ChatClientImpl()
 {
-
+    p_websocketClient.reset();
 }
 
 void ChatClientImpl::connect(const std::string& address, uint16_t port)
@@ -34,6 +35,7 @@ void ChatClientImpl::removeChatClientListener(IChatClientListener* listener)
 {
     m_clientListeners.remove(listener);
 }
+
 
 void ChatClientImpl::disconnect()
 {

@@ -1,6 +1,7 @@
 #include "WebsocketClient/WebsocketClient.h"
 #include "WebsocketClient/IWebsocketClientListener.h"
 
+#include <iostream>
 #include <string.h>
 
 
@@ -18,7 +19,7 @@ void WebsocketClient::initialize()
     m_info.port = CONTEXT_PORT_NO_LISTEN;
     m_info.iface = NULL;
     m_info.protocols = m_protocols;
-    m_info.user = this;
+    m_info.user = (IWebsocketCallbackListener*)this;
     m_info.gid = -1;
     m_info.uid = -1;
     m_info.options = 0;
@@ -36,7 +37,6 @@ void WebsocketClient::connect(const std::string& address, uint16_t port)
     memset(data.buf,0,sizeof(data.buf));
     data.len = 0;
     int use_ssl = 0;
-
     struct libwebsocket* wsi = libwebsocket_client_connect_extended(p_context,
                                                                     address.c_str(),
                                                                     port,
@@ -61,30 +61,31 @@ void WebsocketClient::startService()
     {
         initialize();
     }
-    m_thread = std::thread(&WebsocketClient::run, this);
     b_running = true;
+    m_thread = std::thread(&WebsocketClient::run, this);
 }
-
 
 
 void WebsocketClient::sendMessage(const std::string& message)
 {
-//    while (!b_connected)
-//    {
-//    }
     memset(&data.buf[LWS_SEND_BUFFER_PRE_PADDING],0,MAX_PAYLOAD);
     memcpy(&data.buf[LWS_SEND_BUFFER_PRE_PADDING], message.c_str(),
            strlen(message.c_str()));
     data.len = strlen(message.c_str());
 
     libwebsocket_callback_on_writable_all_protocol(&m_protocols[0]);
-
 }
 
 void WebsocketClient::closeConnection()
 {
+    b_running = false;
+    if( m_thread.joinable())
+    {
+        m_thread.join();
+    }
     libwebsocket_context_destroy(p_context);
     b_initialized = false;
+
 }
 
 void WebsocketClient::addWebsocketClientListener(
@@ -101,15 +102,11 @@ void WebsocketClient::removeWebsocketClientListener(
 
 WebsocketClient::~WebsocketClient()
 {
-    b_running = false;
     if(b_connected)
     {
         closeConnection();
     }
-    if( m_thread.joinable())
-    {
-        m_thread.join();
-    }
+
 }
 
 void WebsocketClient::onMessageReceived(const std::string& message)
