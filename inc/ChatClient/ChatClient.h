@@ -21,8 +21,8 @@ public:
     void connect(const std::string& address, uint16_t port);
     void sendMessage(const std::string& message);
     void disconnect();
-    void addChatClientListener(IChatClientListener* listener);
-    void removeChatClientListener(IChatClientListener* listener);
+    void addChatClientListener(std::shared_ptr<IChatClientListener>& listener);
+    void removeChatClientListener(std::shared_ptr<IChatClientListener>& listener);
 
 private:
     //opaque pointer to actual implementation to reduce compile-time dependencies

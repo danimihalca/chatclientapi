@@ -78,12 +78,11 @@ void WebsocketClient::sendMessage(const std::string& message)
 
 void WebsocketClient::closeConnection()
 {
-    b_running = false;
+    libwebsocket_context_destroy(p_context);
     if( m_thread.joinable())
     {
         m_thread.join();
     }
-    libwebsocket_context_destroy(p_context);
     b_initialized = false;
 
 }
@@ -135,6 +134,8 @@ void WebsocketClient::onDisconnected()
     {
         listener->onDisconnected();
     }
+
+    b_running = false;
 }
 
 void WebsocketClient::run()
@@ -142,6 +143,6 @@ void WebsocketClient::run()
     while(b_running)
     {
         //TODO timeout to 0, sleep afterwards
-        libwebsocket_service(p_context, 10);
+        libwebsocket_service(p_context, 0);
     }
 }

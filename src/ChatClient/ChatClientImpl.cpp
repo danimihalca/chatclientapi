@@ -26,12 +26,12 @@ void ChatClientImpl::sendMessage(const std::string& message)
     p_websocketClient->sendMessage(message);
 }
 
-void ChatClientImpl::addChatClientListener(IChatClientListener* listener)
+void ChatClientImpl::addChatClientListener(std::shared_ptr<IChatClientListener>& listener)
 {
     m_clientListeners.push_back(listener);
 }
 
-void ChatClientImpl::removeChatClientListener(IChatClientListener* listener)
+void ChatClientImpl::removeChatClientListener(std::shared_ptr<IChatClientListener>& listener)
 {
     m_clientListeners.remove(listener);
 }

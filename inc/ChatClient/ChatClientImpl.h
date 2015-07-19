@@ -26,8 +26,8 @@ public:
     void connect(const std::string& address, uint16_t port);
     void sendMessage(const std::string& message);
     void disconnect();
-    void addChatClientListener(IChatClientListener* listener);
-    void removeChatClientListener(IChatClientListener* listener);
+    void addChatClientListener(std::shared_ptr<IChatClientListener>& listener);
+    void removeChatClientListener(std::shared_ptr<IChatClientListener>& listener);
 
     //Implements IWebsocketClientListener
 public:
@@ -37,7 +37,7 @@ public:
 
 private:
     std::unique_ptr<IWebsocketClient> p_websocketClient;
-    std::list<IChatClientListener*> m_clientListeners;
+    std::list<std::shared_ptr<IChatClientListener>> m_clientListeners;
 
 };
 

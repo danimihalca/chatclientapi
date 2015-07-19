@@ -16,12 +16,12 @@ void ChatClient::sendMessage(const std::string& message)
     p_impl->sendMessage(message);
 }
 
-void ChatClient::addChatClientListener(IChatClientListener* listener)
+void ChatClient::addChatClientListener(std::shared_ptr<IChatClientListener>& listener)
 {
     p_impl->addChatClientListener(listener);
 }
 
-void ChatClient::removeChatClientListener(IChatClientListener* listener)
+void ChatClient::removeChatClientListener(std::shared_ptr<IChatClientListener>& listener)
 {
     p_impl->removeChatClientListener(listener);
 }
