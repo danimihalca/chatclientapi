@@ -80,14 +80,13 @@ void WebsocketClient::sendMessage(const std::string& message)
 
 void WebsocketClient::closeConnection()
 {
-    m_mutex.lock();
-    libwebsocket_context_destroy(p_context);
-    m_mutex.unlock();
+    b_running = false;
     if( m_thread.joinable())
     {
         m_thread.join();
     }
     b_initialized = false;
+    libwebsocket_context_destroy(p_context);
 
 }
 
@@ -138,22 +137,12 @@ void WebsocketClient::onDisconnected()
     {
         listener->onDisconnected();
     }
-
-    b_running = false;
 }
 
 void WebsocketClient::run()
 {
     while(b_running)
     {
-        m_mutex.lock();
-        if (!b_running)
-        {
-          m_mutex.unlock();
-          break;
-        }
-        //TODO timeout to 0, sleep afterwards
         libwebsocket_service(p_context, 10);
-        m_mutex.unlock();
     }
 }
