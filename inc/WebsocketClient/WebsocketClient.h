@@ -4,6 +4,7 @@
 #include <string>
 #include <thread>
 #include <list>
+#include <mutex>
 
 #include "WebsocketClient/IWebsocketClient.h"
 
@@ -50,6 +51,7 @@ private:
 
     //flow control
     std::thread m_thread;
+    std::mutex m_mutex;
     bool b_connected = false;
     bool b_running = false;
     bool b_initialized = false;

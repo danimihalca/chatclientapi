@@ -6,6 +6,11 @@ ChatClient::ChatClient() :
 {
 }
 
+ChatClient::~ChatClient()
+{
+  p_impl.release();
+}
+
 void ChatClient::connect(const std::string& address, uint16_t port)
 {
     p_impl->connect(address, port);

@@ -6,9 +6,10 @@
 
 
 WebsocketClient::WebsocketClient() :
-    m_protocols{default_protocol, null_protocol},
     m_websocketListeners()
 {
+	m_protocols[0] = default_protocol;
+	m_protocols[1] = null_protocol;
 }
 
 void WebsocketClient::initialize()
@@ -19,6 +20,7 @@ void WebsocketClient::initialize()
     m_info.port = CONTEXT_PORT_NO_LISTEN;
     m_info.iface = NULL;
     m_info.protocols = m_protocols;
+    m_info.port = 0;
     m_info.user = (IWebsocketCallbackListener*)this;
     m_info.gid = -1;
     m_info.uid = -1;
@@ -78,7 +80,9 @@ void WebsocketClient::sendMessage(const std::string& message)
 
 void WebsocketClient::closeConnection()
 {
+    m_mutex.lock();
     libwebsocket_context_destroy(p_context);
+    m_mutex.unlock();
     if( m_thread.joinable())
     {
         m_thread.join();
@@ -142,7 +146,14 @@ void WebsocketClient::run()
 {
     while(b_running)
     {
+        m_mutex.lock();
+        if (!b_running)
+        {
+          m_mutex.unlock();
+          break;
+        }
         //TODO timeout to 0, sleep afterwards
-        libwebsocket_service(p_context, 0);
+        libwebsocket_service(p_context, 10);
+        m_mutex.unlock();
     }
 }

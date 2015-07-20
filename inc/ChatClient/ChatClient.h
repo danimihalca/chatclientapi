@@ -15,6 +15,7 @@ class LIBRARY_VISIBILITY ChatClient :
 
 public:
     ChatClient();
+    ~ChatClient();
 
     //Implements IChatClient
 public:
