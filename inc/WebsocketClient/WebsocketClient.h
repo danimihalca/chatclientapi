@@ -37,6 +37,7 @@ public:
     void onMessageReceived(const std::string& message);
     void onConnected();
     void onDisconnected();
+    void onConnectionError();
 
 private:
     void run();
@@ -53,6 +54,7 @@ private:
     bool b_connected = false;
     bool b_running = false;
     bool b_initialized = false;
+    bool b_notifiedConnectionError = false;
 
     std::list<IWebsocketClientListener*> m_websocketListeners;
 };

@@ -66,3 +66,11 @@ void ChatClientImpl::onDisconnected()
     }
 }
 
+void ChatClientImpl::onConnectionError()
+{
+    for (auto listener: m_clientListeners)
+    {
+        listener->onConnectionError();
+    }
+}
+

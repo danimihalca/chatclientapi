@@ -8,8 +8,8 @@
 WebsocketClient::WebsocketClient() :
     m_websocketListeners()
 {
-	m_protocols[0] = default_protocol;
-	m_protocols[1] = null_protocol;
+    m_protocols[0] = default_protocol;
+    m_protocols[1] = null_protocol;
 }
 
 void WebsocketClient::initialize()
@@ -25,6 +25,11 @@ void WebsocketClient::initialize()
     m_info.gid = -1;
     m_info.uid = -1;
     m_info.options = 0;
+    m_info.http_proxy_address = NULL;
+
+//    m_info.ka_interval =1;
+//    m_info.ka_probes = 1;
+//    m_info.ka_time=1;
 
     p_context = libwebsocket_create_context(&m_info);
     b_initialized = true;
@@ -63,7 +68,12 @@ void WebsocketClient::startService()
     {
         initialize();
     }
+    if (m_thread.joinable())
+    {
+        m_thread.join();
+    }
     b_running = true;
+    b_notifiedConnectionError = false;
     m_thread = std::thread(&WebsocketClient::run, this);
 }
 
@@ -137,12 +147,30 @@ void WebsocketClient::onDisconnected()
     {
         listener->onDisconnected();
     }
+    b_running = false;
+}
+
+void WebsocketClient::onConnectionError()
+{
+    if (!b_notifiedConnectionError)
+    {
+        for (auto listener: m_websocketListeners)
+        {
+            listener->onConnectionError();
+        }
+        b_notifiedConnectionError = true;
+        b_running = false;
+    }
 }
 
 void WebsocketClient::run()
 {
     while(b_running)
     {
-        libwebsocket_service(p_context, 10);
+        int n = libwebsocket_service(p_context, 50);
+        if (n < 0)
+        {
+            b_running = false;
+        }
     }
 }

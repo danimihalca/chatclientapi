@@ -8,7 +8,6 @@
 #include "WebsocketClient/IWebsocketClientListener.h"
 
 class IWebsocketClient;
-//#include "WebsocketClient/IWebsocketClient.h"
 
 class IChatClientListener;
 
@@ -34,10 +33,11 @@ public:
     void onMessageReceived(const std::string& message);
     void onConnected();
     void onDisconnected();
+    void onConnectionError();
 
 private:
     std::unique_ptr<IWebsocketClient> p_websocketClient;
-    std::list<std::shared_ptr<IChatClientListener>> m_clientListeners;
+    std::list<std::shared_ptr<IChatClientListener> > m_clientListeners;
 
 };
 

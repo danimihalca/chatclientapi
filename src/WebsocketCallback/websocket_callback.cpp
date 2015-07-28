@@ -6,7 +6,7 @@ int websocket_callback(libwebsocket_context*         context,
                        libwebsocket_callback_reasons reason,
                        void*                         user,
                        void*                         in,
-                       size_t                        /*len*/)
+                       size_t /*len*/)
 {
     struct session_data* pss = (struct session_data*)user;
     IWebsocketCallbackListener* listener =
@@ -26,7 +26,12 @@ int websocket_callback(libwebsocket_context*         context,
 
         case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
         {
-            lwsl_notice("Client ERROR\n");
+            if (listener != nullptr)
+            {
+                listener->onConnectionError();
+            }
+            return -1;
+
             break;
         }
 
@@ -36,6 +41,8 @@ int websocket_callback(libwebsocket_context*         context,
             {
                 listener->onDisconnected();
             }
+            return -1;
+
             break;
         }
 
@@ -53,9 +60,9 @@ int websocket_callback(libwebsocket_context*         context,
 
         {
             int n = libwebsocket_write(wsi,
-                                   &pss->buf[LWS_SEND_BUFFER_PRE_PADDING],
-                                   pss->len,
-                                   LWS_WRITE_TEXT);
+                                       &pss->buf[LWS_SEND_BUFFER_PRE_PADDING],
+                                       pss->len,
+                                       LWS_WRITE_TEXT);
             if(n < 0)
             {
                 lwsl_err("ERROR %d writing to socket, hanging up\n", n);
