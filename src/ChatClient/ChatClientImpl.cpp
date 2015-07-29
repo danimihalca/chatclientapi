@@ -3,11 +3,13 @@
 #include "WebsocketClient/WebsocketClient.h"
 
 #include "JsonProtocol/JsonFactory.h"
+#include "JsonProtocol/JsonParser.h"
 
 ChatClientImpl::ChatClientImpl() :
     p_websocketClient(new WebsocketClient()),
     m_clientListeners(),
-    p_jsonFactory(new JsonFactory())
+    p_jsonFactory(new JsonFactory()),
+    p_jsonParser(new JsonParser())
 {
     p_websocketClient->addWebsocketClientListener(this);
 }
@@ -57,10 +59,50 @@ void ChatClientImpl::disconnect()
 
 void ChatClientImpl::onMessageReceived(const std::string& message)
 {
-    for (auto listener: m_clientListeners)
+    p_jsonParser->parseJsonString(message);
+    ChatServer_Action_Type action = p_jsonParser->getActionType();
+    switch (action)
     {
-        listener->onMessageReceived(message);
+        case CS_LOGIN_RESPONSE:
+        {
+            Authentification_Status status = p_jsonParser->getAuthentificationStatus();
+            switch(status)
+            {
+                case AUTH_OK:
+                {
+                    for (auto listener: m_clientListeners)
+                    {
+                        listener->onLoginSuccessfull();
+                    }
+                    break;
+                }
+                case AUTH_FAILED:
+                {
+                    for (auto listener: m_clientListeners)
+                    {
+                        listener->onLoginFailed("INVALID CREDENTIALS");
+                    }
+                    break;
+                }
+                case AUTH_ALREADY_LOGGED_IN:
+                {
+                    for (auto listener: m_clientListeners)
+                    {
+                        listener->onLoginFailed("USER ALREADY LOGGED IN");
+                    }
+                    break;
+                }
+            }
+
+            break;
+        }
+        default:
+        {
+            break;
+        }
     }
+
+
 }
 
 void ChatClientImpl::onConnected()

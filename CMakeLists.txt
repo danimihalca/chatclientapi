@@ -20,11 +20,14 @@ SET (HEADER_FILES inc/chat_client_common.h
                   inc/WebsocketClient/WebsocketClient.h
                   inc/WebsocketCallback/IWebsocketCallbackListener.h
                   inc/WebsocketCallback/websocket_callback.h
+                  inc/JsonProtocol/IJsonParser.h
+                  inc/JsonProtocol/JsonParser.h
                   inc/JsonProtocol/JsonFactory.h)
 SET (SOURCE_FILES src/ChatClient/ChatClient.cpp
                   src/ChatClient/ChatClientImpl.cpp
                   src/WebsocketClient/WebsocketClient.cpp
                   src/WebsocketCallback/websocket_callback.cpp
+                  src/JsonProtocol/JsonParser.cpp
                   src/JsonProtocol/JsonFactory.cpp)
 
 LINK_DIRECTORIES( ${LIBRARY_INSTALL_PATH})

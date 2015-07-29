@@ -12,6 +12,7 @@ class IWebsocketClient;
 class IChatClientListener;
 
 class JsonFactory;
+class IJsonParser;
 
 class ChatClientImpl :
     public IChatClient,
@@ -42,6 +43,7 @@ private:
     std::unique_ptr<IWebsocketClient> p_websocketClient;
     std::list<std::shared_ptr<IChatClientListener> > m_clientListeners;
     std::unique_ptr<JsonFactory> p_jsonFactory;
+    std::unique_ptr<IJsonParser> p_jsonParser;
 };
 
 
