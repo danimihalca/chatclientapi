@@ -1,6 +1,6 @@
 #include "JsonProtocol/JsonFactory.h"
 
-#include "JsonProtocol/common_protocol.h"
+#include <common_protocol.h>
 
 JsonFactory::JsonFactory()
 {
@@ -18,15 +18,15 @@ JsonFactory::~JsonFactory()
     delete p_writer;
 }
 
-std::string JsonFactory::createLoginJSON(const std::string& user, const std::string& password)
+std::string JsonFactory::createLoginJSON(const std::string& username, const std::string& password)
 {
     m_outputStream.str("");
     Json::Value root;
     root[ACTION] = CC_LOGIN_REQUEST;
-    Json::Value credentials;
-    credentials[USER] = user;
-    credentials[PASSWORD] = password;
-    root[CREDENTIALS] = credentials;
+    Json::Value user;
+    user[USERNAME] = username;
+    user[PASSWORD] = password;
+    root[USER] = user;
     p_writer->write(root,&m_outputStream);
 
     return m_outputStream.str();

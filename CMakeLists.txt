@@ -8,6 +8,7 @@ find_package (Threads)
 
 INCLUDE_DIRECTORIES(inc)
 INCLUDE_DIRECTORIES(${HEADERS_INSTALL_PATH})
+INCLUDE_DIRECTORIES(${COMMON_JSON_CHAT_PROTOCOl_PATH})
 
 SET (HEADER_FILES inc/chat_client_common.h
                   inc/ChatClient/IChatClient.h
@@ -19,8 +20,7 @@ SET (HEADER_FILES inc/chat_client_common.h
                   inc/WebsocketClient/WebsocketClient.h
                   inc/WebsocketCallback/IWebsocketCallbackListener.h
                   inc/WebsocketCallback/websocket_callback.h
-                  inc/JsonProtocol/JsonFactory.h
-                  inc/JsonProtocol/common_protocol.h)
+                  inc/JsonProtocol/JsonFactory.h)
 SET (SOURCE_FILES src/ChatClient/ChatClient.cpp
                   src/ChatClient/ChatClientImpl.cpp
                   src/WebsocketClient/WebsocketClient.cpp

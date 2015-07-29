@@ -10,7 +10,7 @@ public:
     JsonFactory();
     ~JsonFactory();
 
-    std::string createLoginJSON(const std::string& user, const std::string& password);
+    std::string createLoginJSON(const std::string& username, const std::string& password);
 
 private:
     Json::StreamWriter* p_writer;
