@@ -11,6 +11,8 @@ class IWebsocketClient;
 
 class IChatClientListener;
 
+class JsonFactory;
+
 class ChatClientImpl :
     public IChatClient,
     public IWebsocketClientListener
@@ -23,6 +25,7 @@ public:
     //Implements IChatClient
 public:
     void connect(const std::string& address, uint16_t port);
+    void login(const std::string& user, const std::string& password);
     void sendMessage(const std::string& message);
     void disconnect();
     void addChatClientListener(std::shared_ptr<IChatClientListener>& listener);
@@ -38,7 +41,7 @@ public:
 private:
     std::unique_ptr<IWebsocketClient> p_websocketClient;
     std::list<std::shared_ptr<IChatClientListener> > m_clientListeners;
-
+    std::unique_ptr<JsonFactory> p_jsonFactory;
 };
 
 

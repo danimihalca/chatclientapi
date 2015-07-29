@@ -3,7 +3,8 @@
 
 #include <iostream>
 #include <string.h>
-
+#include <sstream>
+#include <json/json.h>
 
 WebsocketClient::WebsocketClient() :
     m_websocketListeners()

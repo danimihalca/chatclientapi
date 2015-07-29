@@ -16,6 +16,12 @@ void ChatClient::connect(const std::string& address, uint16_t port)
     p_impl->connect(address, port);
 }
 
+void ChatClient::login(const std::string& user, const std::string& password)
+{
+    p_impl->login(user, password);
+
+}
+
 void ChatClient::sendMessage(const std::string& message)
 {
     p_impl->sendMessage(message);

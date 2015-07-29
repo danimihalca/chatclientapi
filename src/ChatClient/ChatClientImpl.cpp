@@ -2,9 +2,12 @@
 #include "ChatClient/IChatClientListener.h"
 #include "WebsocketClient/WebsocketClient.h"
 
+#include "JsonProtocol/JsonFactory.h"
+
 ChatClientImpl::ChatClientImpl() :
     p_websocketClient(new WebsocketClient()),
-    m_clientListeners()
+    m_clientListeners(),
+    p_jsonFactory(new JsonFactory())
 {
     p_websocketClient->addWebsocketClientListener(this);
 }
@@ -21,17 +24,27 @@ void ChatClientImpl::connect(const std::string& address, uint16_t port)
     p_websocketClient->startService();
 }
 
+void ChatClientImpl::login(const std::string& user, const std::string& password)
+{
+
+    std::string loginJSON = p_jsonFactory->createLoginJSON(user,password);
+
+    p_websocketClient->sendMessage(loginJSON);
+}
+
 void ChatClientImpl::sendMessage(const std::string& message)
 {
     p_websocketClient->sendMessage(message);
 }
 
-void ChatClientImpl::addChatClientListener(std::shared_ptr<IChatClientListener>& listener)
+void ChatClientImpl::addChatClientListener(
+    std::shared_ptr<IChatClientListener>& listener)
 {
     m_clientListeners.push_back(listener);
 }
 
-void ChatClientImpl::removeChatClientListener(std::shared_ptr<IChatClientListener>& listener)
+void ChatClientImpl::removeChatClientListener(
+    std::shared_ptr<IChatClientListener>& listener)
 {
     m_clientListeners.remove(listener);
 }
