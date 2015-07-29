@@ -11,7 +11,6 @@ class IChatClientListener;
 class LIBRARY_VISIBILITY IChatClient
 {
 public:
-    virtual void connect(const std::string& address, uint16_t port) = 0;
     virtual void login(const std::string& user, const std::string& password) = 0;
     virtual void sendMessage(const std::string& message) = 0;
     virtual void disconnect() = 0;

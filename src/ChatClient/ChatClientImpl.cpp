@@ -5,7 +5,10 @@
 #include "JsonProtocol/JsonFactory.h"
 #include "JsonProtocol/JsonParser.h"
 
-ChatClientImpl::ChatClientImpl() :
+ChatClientImpl::ChatClientImpl(const std::string& address, uint16_t port) :
+    m_address(address),
+    m_port(port),
+    m_connectionStatus(NOT_CONNECTED),
     p_websocketClient(new WebsocketClient()),
     m_clientListeners(),
     p_jsonFactory(new JsonFactory()),
@@ -19,18 +22,20 @@ ChatClientImpl::~ChatClientImpl()
     p_websocketClient.reset();
 }
 
-void ChatClientImpl::connect(const std::string& address, uint16_t port)
-{
-    p_websocketClient->initialize();
-    p_websocketClient->connect(address, port);
-    p_websocketClient->startService();
-}
-
 void ChatClientImpl::login(const std::string& user, const std::string& password)
 {
-
+    if (m_connectionStatus != CONNECTED)
+    {
+        p_websocketClient->connect(m_address, m_port);
+    }
+    while (m_connectionStatus == NOT_CONNECTED)
+    {
+    }
+    if (m_connectionStatus == CONNECTION_ERROR)
+    {
+        return;
+    }
     std::string loginJSON = p_jsonFactory->createLoginJSON(user,password);
-
     p_websocketClient->sendMessage(loginJSON);
 }
 
@@ -65,7 +70,8 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
     {
         case CS_LOGIN_RESPONSE:
         {
-            Authentification_Status status = p_jsonParser->getAuthentificationStatus();
+            Authentification_Status status =
+                p_jsonParser->getAuthentificationStatus();
             switch(status)
             {
                 case AUTH_OK:
@@ -76,6 +82,7 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
                     }
                     break;
                 }
+
                 case AUTH_FAILED:
                 {
                     for (auto listener: m_clientListeners)
@@ -84,6 +91,7 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
                     }
                     break;
                 }
+
                 case AUTH_ALREADY_LOGGED_IN:
                 {
                     for (auto listener: m_clientListeners)
@@ -96,6 +104,7 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
 
             break;
         }
+
         default:
         {
             break;
@@ -111,10 +120,12 @@ void ChatClientImpl::onConnected()
     {
         listener->onConnected();
     }
+    m_connectionStatus = CONNECTED;
 }
 
 void ChatClientImpl::onDisconnected()
 {
+    m_connectionStatus = NOT_CONNECTED;
     for (auto listener: m_clientListeners)
     {
         listener->onDisconnected();
@@ -127,5 +138,6 @@ void ChatClientImpl::onConnectionError()
     {
         listener->onConnectionError();
     }
+    m_connectionStatus = CONNECTION_ERROR;
 }
 

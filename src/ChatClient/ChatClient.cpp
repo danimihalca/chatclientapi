@@ -1,19 +1,14 @@
 #include "ChatClient/ChatClientImpl.h"
 #include "ChatClient/ChatClient.h"
 
-ChatClient::ChatClient() :
-    p_impl(new ChatClientImpl())
+ChatClient::ChatClient(const std::string& address, uint16_t port) :
+    p_impl(new ChatClientImpl(address, port))
 {
 }
 
 ChatClient::~ChatClient()
 {
   p_impl.release();
-}
-
-void ChatClient::connect(const std::string& address, uint16_t port)
-{
-    p_impl->connect(address, port);
 }
 
 void ChatClient::login(const std::string& user, const std::string& password)

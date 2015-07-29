@@ -61,6 +61,7 @@ void WebsocketClient::connect(const std::string& address, uint16_t port)
         lwsl_err("Client failed to connect to %s:%u\n", address.c_str(), port);
     }
     lwsl_notice("Client connecting to %s:%u\n", address.c_str(), port);
+    startService();
 }
 
 void WebsocketClient::startService()
