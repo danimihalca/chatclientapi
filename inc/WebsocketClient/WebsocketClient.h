@@ -24,8 +24,9 @@ public:
 
     //Implements IWebsocketClient
 public:
+    void setServerProperties(const std::string& address, uint16_t port);
     void initialize();
-    void connect(const std::string& address, uint16_t port);
+    bool connect();
     void startService();
     void sendMessage(const std::string& message);
     void closeConnection();
@@ -43,6 +44,9 @@ private:
     void run();
 
 private:
+    std::string m_address;
+    uint16_t m_port;
+
     //libwebsockets specific objects
     struct libwebsocket_context* p_context;
     struct libwebsocket_protocols m_protocols[2];

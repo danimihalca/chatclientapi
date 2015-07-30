@@ -27,11 +27,12 @@ class ChatClientImpl :
 {
 
 public:
-    ChatClientImpl(const std::string& address, uint16_t port);
+    ChatClientImpl();
     ~ChatClientImpl();
 
     //Implements IChatClient
 public:
+    void setServerProperties(const std::string& address, uint16_t port);
     void login(const std::string& user, const std::string& password);
     void sendMessage(const std::string& message);
     void disconnect();
@@ -46,8 +47,6 @@ public:
     void onConnectionError();
 
 private:
-    std::string m_address;
-    uint16_t m_port;
     ConnectionStatus m_connectionStatus;
     std::unique_ptr<IWebsocketClient> p_websocketClient;
     std::list<std::shared_ptr<IChatClientListener> > m_clientListeners;

@@ -36,7 +36,7 @@ void WebsocketClient::initialize()
     b_initialized = true;
 }
 
-void WebsocketClient::connect(const std::string& address, uint16_t port)
+bool WebsocketClient::connect()
 {
     if(!b_initialized)
     {
@@ -46,11 +46,11 @@ void WebsocketClient::connect(const std::string& address, uint16_t port)
     data.len = 0;
     int use_ssl = 0;
     struct libwebsocket* wsi = libwebsocket_client_connect_extended(p_context,
-                                                                    address.c_str(),
-                                                                    port,
+                                                                    m_address.c_str(),
+                                                                    m_port,
                                                                     use_ssl,
                                                                     "/",
-                                                                    address.c_str(),
+                                                                    m_address.c_str(),
                                                                     "origin",
                                                                     NULL,
                                                                     -1,
@@ -58,10 +58,13 @@ void WebsocketClient::connect(const std::string& address, uint16_t port)
 
     if(!wsi)
     {
-        lwsl_err("Client failed to connect to %s:%u\n", address.c_str(), port);
+        lwsl_err("Client failed to connect to %s:%u\n",
+                 m_address.c_str(), m_port);
+        return false;
     }
-    lwsl_notice("Client connecting to %s:%u\n", address.c_str(), port);
+    lwsl_notice("Client connecting to %s:%u\n", m_address.c_str(), m_port);
     startService();
+    return true;
 }
 
 void WebsocketClient::startService()
@@ -121,6 +124,13 @@ WebsocketClient::~WebsocketClient()
         closeConnection();
     }
 
+}
+
+void WebsocketClient::setServerProperties(const std::string& address,
+                                          uint16_t           port)
+{
+    m_address = address;
+    m_port = port;
 }
 
 void WebsocketClient::onMessageReceived(const std::string& message)

@@ -5,9 +5,7 @@
 #include "JsonProtocol/JsonFactory.h"
 #include "JsonProtocol/JsonParser.h"
 
-ChatClientImpl::ChatClientImpl(const std::string& address, uint16_t port) :
-    m_address(address),
-    m_port(port),
+ChatClientImpl::ChatClientImpl() :
     m_connectionStatus(NOT_CONNECTED),
     p_websocketClient(new WebsocketClient()),
     m_clientListeners(),
@@ -22,11 +20,21 @@ ChatClientImpl::~ChatClientImpl()
     p_websocketClient.reset();
 }
 
+void ChatClientImpl::setServerProperties(const std::string& address,
+                                         uint16_t           port)
+{
+    p_websocketClient->setServerProperties(address,port);
+}
+
 void ChatClientImpl::login(const std::string& user, const std::string& password)
 {
     if (m_connectionStatus != CONNECTED)
     {
-        p_websocketClient->connect(m_address, m_port);
+        bool isConnecting = p_websocketClient->connect();
+        if (!isConnecting)
+        {
+            return;
+        }
     }
     while (m_connectionStatus == NOT_CONNECTED)
     {

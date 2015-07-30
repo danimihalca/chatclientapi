@@ -14,11 +14,12 @@ class LIBRARY_VISIBILITY ChatClient :
 {
 
 public:
-    ChatClient(const std::string& address, uint16_t port);
+    ChatClient();
     ~ChatClient();
 
     //Implements IChatClient
 public:
+    void setServerProperties(const std::string& address, uint16_t port);
     void login(const std::string& user, const std::string& password);
     void sendMessage(const std::string& message);
     void disconnect();
