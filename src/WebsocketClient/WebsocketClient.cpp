@@ -44,6 +44,7 @@ bool WebsocketClient::connect()
     {
         initialize();
     }
+    b_notifiedConnectionError = false;
     memset(data.buf,0,sizeof(data.buf));
     data.len = 0;
     int use_ssl = 0;
@@ -60,11 +61,12 @@ bool WebsocketClient::connect()
 
     if(!wsi)
     {
-        lwsl_err("Client failed to connect to %s:%u\n",
+        log_debug("Client failed to connect to %s:%u\n",
                  m_address.c_str(), m_port);
+        onConnectionError();
         return false;
     }
-    lwsl_notice("Client connecting to %s:%u\n", m_address.c_str(), m_port);
+    log_debug("Client connecting to %s:%u\n", m_address.c_str(), m_port);
     startService();
     return true;
 }
@@ -80,7 +82,6 @@ void WebsocketClient::startService()
         m_thread.join();
     }
     b_running = true;
-    b_notifiedConnectionError = false;
     m_thread = std::thread(&WebsocketClient::run, this);
 }
 

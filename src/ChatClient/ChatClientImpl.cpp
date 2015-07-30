@@ -30,6 +30,7 @@ void ChatClientImpl::login(const std::string& user, const std::string& password)
 {
     if (m_connectionStatus != CONNECTED)
     {
+        m_connectionStatus = NOT_CONNECTED;
         bool isConnecting = p_websocketClient->connect();
         if (!isConnecting)
         {
