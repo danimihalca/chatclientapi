@@ -6,6 +6,8 @@
 #include <sstream>
 #include <json/json.h>
 
+#include "log_debug.h"
+
 WebsocketClient::WebsocketClient() :
     m_websocketListeners()
 {
@@ -85,6 +87,7 @@ void WebsocketClient::startService()
 
 void WebsocketClient::sendMessage(const std::string& message)
 {
+    log_debug("SENDING : %s\n",message.c_str());
     memset(&data.buf[LWS_SEND_BUFFER_PRE_PADDING],0,MAX_PAYLOAD);
     memcpy(&data.buf[LWS_SEND_BUFFER_PRE_PADDING], message.c_str(),
            strlen(message.c_str()));

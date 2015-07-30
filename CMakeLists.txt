@@ -2,8 +2,12 @@ project(chatClientAPI)
 cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
 add_definitions(-DBUILDING_LIBRARY)
 
+if(${CMAKE_BUILD_TYPE} MATCHES Debug)
+    add_definitions(-DLOG_DEBUG)
+endif()
 find_package (Threads)
 
 INCLUDE_DIRECTORIES(inc)
@@ -11,6 +15,7 @@ INCLUDE_DIRECTORIES(${HEADERS_INSTALL_PATH})
 INCLUDE_DIRECTORIES(${COMMON_JSON_CHAT_PROTOCOl_PATH})
 
 SET (HEADER_FILES inc/chat_client_common.h
+                  inc/log_debug.h
                   inc/ChatClient/IChatClient.h
                   inc/ChatClient/IChatClientListener.h
                   inc/ChatClient/ChatClient.h
@@ -35,6 +40,10 @@ LINK_DIRECTORIES( ${LIBRARY_INSTALL_PATH})
 
 SET (LIBRARIES ${CMAKE_THREAD_LIBS_INIT}
                z websockets jsoncpp)
+
+IF (${CMAKE_SYSTEM_NAME} MATCHES Android)
+    SET( LIBRARIES "${LIBRARIES} -llog")
+ENDIF()
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${LIBRARIES})

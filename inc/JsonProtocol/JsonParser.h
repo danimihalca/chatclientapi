@@ -22,7 +22,6 @@ public:
 private:
     Json::CharReader* p_reader;
     Json::Value m_root;
-    std::string m_errors;
 
 };
 

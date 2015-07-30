@@ -4,6 +4,8 @@
 
 #include <cstring>
 
+#include "log_debug.h"
+
 JsonParser::JsonParser()
 {
     Json::CharReaderBuilder builder;
@@ -19,14 +21,16 @@ JsonParser::~JsonParser()
 
 void JsonParser::parseJsonString(const std::string& json)
 {
+    log_debug("PARSING : %s\n",json.c_str());
     const char* cString = json.c_str();
     bool successfful = p_reader->parse(cString,
-                                       &(cString[strlen(cString)]),&m_root,
-                                       &m_errors);
+                                       cString + strlen(cString),
+                                       &m_root,
+                                       nullptr);
 
     if (!successfful)
     {
-        throw Json::Exception(m_errors);
+        throw Json::Exception("Invalid json");
     }
 }
 
@@ -37,5 +41,6 @@ ChatServer_Action_Type JsonParser::getActionType()
 
 Authentification_Status JsonParser::getAuthentificationStatus()
 {
-    return static_cast<Authentification_Status>(m_root[AUTHENTIFICATION_STATUS].asInt());
+    return static_cast<Authentification_Status>(m_root[AUTHENTIFICATION_STATUS].
+                                                asInt());
 }
