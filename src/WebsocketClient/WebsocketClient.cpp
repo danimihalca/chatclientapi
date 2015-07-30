@@ -6,7 +6,7 @@
 #include <sstream>
 #include <json/json.h>
 
-#include "log_debug.h"
+#include <debug_utils/log_debug.h>
 
 WebsocketClient::WebsocketClient() :
     m_websocketListeners()

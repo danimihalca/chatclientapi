@@ -12,10 +12,9 @@ find_package (Threads)
 
 INCLUDE_DIRECTORIES(inc)
 INCLUDE_DIRECTORIES(${HEADERS_INSTALL_PATH})
-INCLUDE_DIRECTORIES(${COMMON_JSON_CHAT_PROTOCOl_PATH})
+INCLUDE_DIRECTORIES(${CHAT_UTILS_PATH})
 
 SET (HEADER_FILES inc/chat_client_common.h
-                  inc/log_debug.h
                   inc/ChatClient/IChatClient.h
                   inc/ChatClient/IChatClientListener.h
                   inc/ChatClient/ChatClient.h
