@@ -125,11 +125,11 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
 
 void ChatClientImpl::onConnected()
 {
+    m_connectionStatus = CONNECTED;
     for (auto listener: m_clientListeners)
     {
         listener->onConnected();
     }
-    m_connectionStatus = CONNECTED;
 }
 
 void ChatClientImpl::onDisconnected()
