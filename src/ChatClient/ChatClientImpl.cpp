@@ -6,6 +6,8 @@
 #include "JsonProtocol/ClientJsonFactory.hpp"
 #include "JsonProtocol/ClientJsonParser.hpp"
 
+#include <debug_utils/log_debug.hpp>
+
 ChatClientImpl::ChatClientImpl() :
     m_user(),
     m_state(INITIAL),
@@ -59,6 +61,13 @@ void ChatClientImpl::sendMessage(const std::string& message)
     p_websocketClient->sendMessage(message);
 }
 
+void ChatClientImpl::getContacts()
+{
+    std::string requestJson = p_jsonFactory->createGetContactsRequestJsonString(m_user);
+
+    p_websocketClient->sendMessage(requestJson);
+}
+
 void ChatClientImpl::addChatClientListener(
     std::shared_ptr<IChatClientListener>& listener)
 {
@@ -85,6 +94,12 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
         case LOGIN_RESPONSE:
         {
             handleLoginResponse();
+            break;
+        }
+
+        case GET_CONTACTS_RESPONSE:
+        {
+            handleGetContactsResponse();
             break;
         }
 
@@ -169,5 +184,14 @@ void ChatClientImpl::handleLoginResponse()
             }
             break;
         }
+    }
+}
+
+void ChatClientImpl::handleGetContactsResponse()
+{
+    Contacts contacts = p_jsonParser->getContacts();
+    for(Contact contact: contacts)
+    {
+        LOG_DEBUG("Contact: %s\n", contact.getUserName().c_str());
     }
 }

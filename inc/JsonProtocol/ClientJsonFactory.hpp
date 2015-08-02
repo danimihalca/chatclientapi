@@ -6,18 +6,21 @@
 
 #include "IClientJsonFactory.hpp"
 
-class ClientJsonFactory: public IClientJsonFactory
+class ClientJsonFactory : public IClientJsonFactory
 {
 public:
     ClientJsonFactory();
     ~ClientJsonFactory();
 
+    // Implements IClientJsonFactory interface
+public:
     std::string createLoginJsonString(const UserCredentials& userCredentials);
+    std::string createGetContactsRequestJsonString(const User& user);
 
 private:
     Json::StreamWriter* p_writer;
     std::stringstream m_outputStream;
+
 };
 
 #endif // CLIENTJSONFACTORY_HPP
-

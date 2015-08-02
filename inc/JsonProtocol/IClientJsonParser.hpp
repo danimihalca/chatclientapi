@@ -10,14 +10,15 @@
 class IClientJsonParser
 {
 public:
-    virtual ~IClientJsonParser()
-    {
-    }
-
-    virtual bool parseJsonString(const std::string& json) = 0 ;
+    virtual bool parseJsonString(const std::string& json) = 0;
     virtual Chat_Action_Type getActionType() = 0;
     virtual Authentication_Status getAuthenticationStatus() = 0;
     virtual UserDetails getUserDetails() = 0;
+    virtual Contacts getContacts() = 0;
+
+    virtual ~IClientJsonParser()
+    {
+    }
 };
 
 #endif // ICLIENTJSONPARSER_HPP

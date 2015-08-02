@@ -23,7 +23,7 @@ ClientJsonParser::~ClientJsonParser()
 
 bool ClientJsonParser::parseJsonString(const std::string& json)
 {
-    log_debug("PARSING : %s\n",json.c_str());
+    LOG_DEBUG("PARSING : %s\n",json.c_str());
     const char* cString = json.c_str();
     return p_reader->parse(cString,
                            cString + strlen(cString),
@@ -46,6 +46,24 @@ Authentication_Status ClientJsonParser::getAuthenticationStatus()
 UserDetails ClientJsonParser::getUserDetails()
 {
     int userId = m_root[USER_DETAILS][USER_ID].asInt();
-    std::string fullName =  m_root[USER_DETAILS][USER_FULLNAME].asString();
+    std::string fullName = m_root[USER_DETAILS][USER_FULLNAME].asString();
     return UserDetails(userId, fullName);
+}
+
+Contacts ClientJsonParser::getContacts()
+{
+    Json::Value contactsJson = m_root[CONTACTS];
+
+    Contacts contacts(contactsJson.size());
+
+    int count = 0;
+    for (auto contactJson: contactsJson)
+    {
+        contacts[count++] = Contact(contactJson[USER_ID].asInt(),
+                                    contactJson[USER_USERNAME].asString(),
+                                    contactJson[USER_FULLNAME].asString(),
+                                    contactJson[CONTACT_ONLINE].asBool());
+    }
+
+    return contacts;
 }

@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 add_definitions(-DBUILDING_LIBRARY)
 
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)
-    add_definitions(-DLOG_DEBUG)
+    add_definitions(-DENABLE_LOG_DEBUG)
 endif()
 find_package (Threads)
 

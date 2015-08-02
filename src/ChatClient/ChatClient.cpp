@@ -28,6 +28,11 @@ void ChatClient::sendMessage(const std::string& message)
     p_impl->sendMessage(message);
 }
 
+void ChatClient::getContacts()
+{
+    p_impl->getContacts();
+}
+
 void ChatClient::addChatClientListener(std::shared_ptr<IChatClientListener>& listener)
 {
     p_impl->addChatClientListener(listener);

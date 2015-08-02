@@ -19,7 +19,7 @@ public:
     Chat_Action_Type getActionType();
     Authentication_Status getAuthenticationStatus();
     UserDetails getUserDetails();
-
+    Contacts getContacts();
 private:
     Json::CharReader* p_reader;
     Json::Value m_root;

@@ -61,12 +61,12 @@ bool WebsocketClient::connect()
 
     if(!wsi)
     {
-        log_debug("Client failed to connect to %s:%u\n",
+        LOG_DEBUG("Client failed to connect to %s:%u\n",
                  m_address.c_str(), m_port);
         onConnectionError();
         return false;
     }
-    log_debug("Client connecting to %s:%u\n", m_address.c_str(), m_port);
+    LOG_DEBUG("Client connecting to %s:%u\n", m_address.c_str(), m_port);
     startService();
     return true;
 }
@@ -88,7 +88,7 @@ void WebsocketClient::startService()
 
 void WebsocketClient::sendMessage(const std::string& message)
 {
-    log_debug("SENDING : %s\n",message.c_str());
+    LOG_DEBUG("SENDING : %s\n",message.c_str());
     memset(&data.buf[LWS_SEND_BUFFER_PRE_PADDING],0,MAX_PAYLOAD);
     memcpy(&data.buf[LWS_SEND_BUFFER_PRE_PADDING], message.c_str(),
            strlen(message.c_str()));

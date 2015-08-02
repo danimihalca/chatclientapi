@@ -33,3 +33,13 @@ std::string ClientJsonFactory::createLoginJsonString(const UserCredentials& user
     return m_outputStream.str();
 }
 
+
+std::string ClientJsonFactory::createGetContactsRequestJsonString(const User& user)
+{
+    m_outputStream.str("");
+    Json::Value root;
+    root[ACTION] = GET_CONTACTS_REQUEST;
+    p_writer->write(root,&m_outputStream);
+
+    return m_outputStream.str();
+}
