@@ -1,5 +1,5 @@
-#include "ChatClient/ChatClientImpl.h"
-#include "ChatClient/ChatClient.h"
+#include "ChatClient/ChatClientImpl.hpp"
+#include "ChatClient/ChatClient.hpp"
 
 ChatClient::ChatClient() :
     p_impl(new ChatClientImpl())

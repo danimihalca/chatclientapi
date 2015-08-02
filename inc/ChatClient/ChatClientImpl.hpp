@@ -1,36 +1,42 @@
-#ifndef CHATCLIENTIMPL_H
-#define CHATCLIENTIMPL_H
+#ifndef CHATCLIENTIMPL_HPP
+#define CHATCLIENTIMPL_HPP
 
 #include <memory>
 #include <list>
 
-#include "ChatClient/IChatClient.h"
-#include "WebsocketClient/IWebsocketClientListener.h"
+#include <Model/User.hpp>
 
-class IWebsocketClient;
+#include "ChatClient/IChatClient.hpp"
+#include "WebsocketClient/IWebsocketClientListener.hpp"
 
 class IChatClientListener;
+class IClientJsonFactory;
+class IClientJsonParser;
+class IWebsocketClient;
 
-class JsonFactory;
-class IJsonParser;
-
-enum ConnectionStatus
-{
-    NOT_CONNECTED,
-    CONNECTED,
-    CONNECTION_ERROR
-};
 
 class ChatClientImpl :
     public IChatClient,
     public IWebsocketClientListener
 {
+    enum Chat_Client_State
+    {
+        INITIAL,
+        CONNECTING,
+        CONNECTED,
+        CONNECT_ERROR,
+        DISCONNECTED,
+
+        LOGGING_IN,
+        LOGGED_IN,
+        LOG_IN_ERROR
+    };
 
 public:
     ChatClientImpl();
     ~ChatClientImpl();
 
-    //Implements IChatClient
+    // Implements IChatClient interface
 public:
     void setServerProperties(const std::string& address, uint16_t port);
     void login(const std::string& user, const std::string& password);
@@ -39,7 +45,7 @@ public:
     void addChatClientListener(std::shared_ptr<IChatClientListener>& listener);
     void removeChatClientListener(std::shared_ptr<IChatClientListener>& listener);
 
-    //Implements IWebsocketClientListener
+    // Implements IWebsocketClientListener
 public:
     void onMessageReceived(const std::string& message);
     void onConnected();
@@ -47,12 +53,17 @@ public:
     void onConnectionError();
 
 private:
-    ConnectionStatus m_connectionStatus;
+    void performLogin();
+    void handleLoginResponse();
+
+private:
+    User m_user;
+    Chat_Client_State m_state;
     std::unique_ptr<IWebsocketClient> p_websocketClient;
     std::list<std::shared_ptr<IChatClientListener> > m_clientListeners;
-    std::unique_ptr<JsonFactory> p_jsonFactory;
-    std::unique_ptr<IJsonParser> p_jsonParser;
+    std::unique_ptr<IClientJsonFactory> p_jsonFactory;
+    std::unique_ptr<IClientJsonParser> p_jsonParser;
 };
 
 
-#endif //CHATCLIENTIMPL_H
+#endif //CHATCLIENTIMPL_HPP

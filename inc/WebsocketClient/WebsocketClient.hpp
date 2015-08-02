@@ -1,16 +1,16 @@
-#ifndef WEBSOCKETCLIENT_H
-#define WEBSOCKETCLIENT_H
+#ifndef WEBSOCKETCLIENT_HPP
+#define WEBSOCKETCLIENT_HPP
 
 #include <string>
 #include <thread>
 #include <list>
 
-#include "WebsocketClient/IWebsocketClient.h"
+#include "WebsocketClient/IWebsocketClient.hpp"
 
-#include "WebsocketCallback/IWebsocketCallbackListener.h"
-#include "WebsocketCallback/websocket_callback.h"
+#include "WebsocketCallback/IWebsocketCallbackListener.hpp"
+#include "WebsocketCallback/websocket_callback.hpp"
 
-#include "chat_client_common.h"
+#include "chat_client_common.hpp"
 
 
 class WebsocketClient :
@@ -65,4 +65,4 @@ private:
 
 
 
-#endif //WEBSOCKETCLIENT_H
+#endif //WEBSOCKETCLIENT_HPP

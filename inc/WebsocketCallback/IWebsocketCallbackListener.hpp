@@ -1,20 +1,18 @@
-#ifndef IWEBSOCKETCLIENTLISTENER_H
-#define IWEBSOCKETCLIENTLISTENER_H
+#ifndef IWEBSOCKETCALLBACKLISTENER_HPP
+#define IWEBSOCKETCALLBACKLISTENER_HPP
 
 #include <string>
 
-class IWebsocketClientListener
+class IWebsocketCallbackListener
 {
 public:
     virtual void onMessageReceived(const std::string& message) = 0;
     virtual void onConnected() = 0;
     virtual void onConnectionError() = 0;
     virtual void onDisconnected() = 0;
-    virtual ~IWebsocketClientListener()
+    virtual ~IWebsocketCallbackListener()
     {
     }
 };
 
-
-#endif // IWEBSOCKETCLIENTLISTENER_H
-
+#endif // IWEBSOCKETCALLBACKLISTENER_HPP

@@ -1,12 +1,12 @@
-#include "WebsocketClient/WebsocketClient.h"
-#include "WebsocketClient/IWebsocketClientListener.h"
+#include "WebsocketClient/WebsocketClient.hpp"
+#include "WebsocketClient/IWebsocketClientListener.hpp"
 
 #include <iostream>
 #include <string.h>
 #include <sstream>
 #include <json/json.h>
 
-#include <debug_utils/log_debug.h>
+#include <debug_utils/log_debug.hpp>
 
 WebsocketClient::WebsocketClient() :
     m_websocketListeners()

@@ -1,16 +1,18 @@
-#include "ChatClient/ChatClientImpl.h"
-#include "ChatClient/IChatClientListener.h"
-#include "WebsocketClient/WebsocketClient.h"
+#include "ChatClient/ChatClientImpl.hpp"
+#include "ChatClient/IChatClientListener.hpp"
 
-#include "JsonProtocol/JsonFactory.h"
-#include "JsonProtocol/JsonParser.h"
+#include "WebsocketClient/WebsocketClient.hpp"
+
+#include "JsonProtocol/ClientJsonFactory.hpp"
+#include "JsonProtocol/ClientJsonParser.hpp"
 
 ChatClientImpl::ChatClientImpl() :
-    m_connectionStatus(NOT_CONNECTED),
+    m_user(),
+    m_state(INITIAL),
     p_websocketClient(new WebsocketClient()),
     m_clientListeners(),
-    p_jsonFactory(new JsonFactory()),
-    p_jsonParser(new JsonParser())
+    p_jsonFactory(new ClientJsonFactory()),
+    p_jsonParser(new ClientJsonParser())
 {
     p_websocketClient->addWebsocketClientListener(this);
 }
@@ -26,26 +28,30 @@ void ChatClientImpl::setServerProperties(const std::string& address,
     p_websocketClient->setServerProperties(address,port);
 }
 
-void ChatClientImpl::login(const std::string& user, const std::string& password)
+void ChatClientImpl::login(const std::string& userName,
+                           const std::string& password)
 {
-    if (m_connectionStatus != CONNECTED)
+    UserCredentials userCredentials(userName,password);
+    m_user.setUserCredentials(userCredentials);
+
+    if (m_state == CONNECTED ||
+        m_state == LOG_IN_ERROR)
     {
-        m_connectionStatus = NOT_CONNECTED;
-        bool isConnecting = p_websocketClient->connect();
-        if (!isConnecting)
+        performLogin();
+    }
+
+    // else handle login after connecting to the server
+    if (m_state == INITIAL ||
+        m_state == DISCONNECTED ||
+        m_state == CONNECT_ERROR)
+    {
+        m_state = CONNECTING;
+
+        if (!p_websocketClient->connect())
         {
-            return;
+            m_state = CONNECT_ERROR;
         }
     }
-    while (m_connectionStatus == NOT_CONNECTED)
-    {
-    }
-    if (m_connectionStatus == CONNECTION_ERROR)
-    {
-        return;
-    }
-    std::string loginJSON = p_jsonFactory->createLoginJSON(user,password);
-    p_websocketClient->sendMessage(loginJSON);
 }
 
 void ChatClientImpl::sendMessage(const std::string& message)
@@ -65,7 +71,6 @@ void ChatClientImpl::removeChatClientListener(
     m_clientListeners.remove(listener);
 }
 
-
 void ChatClientImpl::disconnect()
 {
     p_websocketClient->closeConnection();
@@ -74,43 +79,12 @@ void ChatClientImpl::disconnect()
 void ChatClientImpl::onMessageReceived(const std::string& message)
 {
     p_jsonParser->parseJsonString(message);
-    ChatServer_Action_Type action = p_jsonParser->getActionType();
+    Chat_Action_Type action = p_jsonParser->getActionType();
     switch (action)
     {
-        case CS_LOGIN_RESPONSE:
+        case LOGIN_RESPONSE:
         {
-            Authentification_Status status =
-                p_jsonParser->getAuthentificationStatus();
-            switch(status)
-            {
-                case AUTH_OK:
-                {
-                    for (auto listener: m_clientListeners)
-                    {
-                        listener->onLoginSuccessfull();
-                    }
-                    break;
-                }
-
-                case AUTH_FAILED:
-                {
-                    for (auto listener: m_clientListeners)
-                    {
-                        listener->onLoginFailed("INVALID CREDENTIALS");
-                    }
-                    break;
-                }
-
-                case AUTH_ALREADY_LOGGED_IN:
-                {
-                    for (auto listener: m_clientListeners)
-                    {
-                        listener->onLoginFailed("USER ALREADY LOGGED IN");
-                    }
-                    break;
-                }
-            }
-
+            handleLoginResponse();
             break;
         }
 
@@ -119,22 +93,22 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
             break;
         }
     }
-
-
 }
 
 void ChatClientImpl::onConnected()
 {
-    m_connectionStatus = CONNECTED;
+    m_state = CONNECTED;
     for (auto listener: m_clientListeners)
     {
         listener->onConnected();
     }
+
+    performLogin();
 }
 
 void ChatClientImpl::onDisconnected()
 {
-    m_connectionStatus = NOT_CONNECTED;
+    m_state = DISCONNECTED;
     for (auto listener: m_clientListeners)
     {
         listener->onDisconnected();
@@ -143,10 +117,57 @@ void ChatClientImpl::onDisconnected()
 
 void ChatClientImpl::onConnectionError()
 {
+    m_state = CONNECT_ERROR;
     for (auto listener: m_clientListeners)
     {
         listener->onConnectionError();
     }
-    m_connectionStatus = CONNECTION_ERROR;
 }
 
+void ChatClientImpl::performLogin()
+{
+    std::string loginJSON = p_jsonFactory->createLoginJsonString(
+        m_user.getUserCredentials());
+    p_websocketClient->sendMessage(loginJSON);
+
+    m_state = LOGGING_IN;
+}
+
+void ChatClientImpl::handleLoginResponse()
+{
+    Authentication_Status status =
+        p_jsonParser->getAuthenticationStatus();
+    switch(status)
+    {
+        case AUTH_SUCCESSFUL:
+        {
+            m_state = LOGGED_IN;
+            m_user.setUserDetails(p_jsonParser->getUserDetails());
+            for (auto listener: m_clientListeners)
+            {
+                listener->onLoginSuccessful();
+            }
+            break;
+        }
+
+        case AUTH_INVALID_CREDENTIALS:
+        {
+            m_state = LOG_IN_ERROR;
+            for (auto listener: m_clientListeners)
+            {
+                listener->onLoginFailed("INVALID CREDENTIALS");
+            }
+            break;
+        }
+
+        case AUTH_ALREADY_LOGGED_IN:
+        {
+            m_state = LOG_IN_ERROR;
+            for (auto listener: m_clientListeners)
+            {
+                listener->onLoginFailed("USER ALREADY LOGGED IN");
+            }
+            break;
+        }
+    }
+}

@@ -1,9 +1,9 @@
-#ifndef WEBSOCKET_CLIENT_CALLBACK_H
-#define WEBSOCKET_CLIENT_CALLBACK_H
+#ifndef WEBSOCKET_CLIENT_CALLBACK_HPP
+#define WEBSOCKET_CLIENT_CALLBACK_HPP
 
 #include <libwebsockets.h>
 
-#include "chat_client_common.h"
+#include "chat_client_common.hpp"
 
 const int MAX_PAYLOAD = 1400;
 
@@ -38,5 +38,5 @@ const struct libwebsocket_protocols null_protocol =
 };
 
 
-#endif // WEBSOCKET_CLIENT_CALLBACK_H
+#endif // WEBSOCKET_CLIENT_CALLBACK_HPP
 

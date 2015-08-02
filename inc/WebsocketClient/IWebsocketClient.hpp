@@ -1,9 +1,9 @@
-#ifndef IWEBSOCKETCLIENT_H
-#define IWEBSOCKETCLIENT_H
+#ifndef IWEBSOCKETCLIENT_HPP
+#define IWEBSOCKETCLIENT_HPP
 
 #include <string>
 
-#include "chat_client_common.h"
+#include "chat_client_common.hpp"
 
 class IWebsocketClientListener;
 
@@ -29,5 +29,5 @@ public:
 };
 
 
-#endif // IWEBSOCKETCLIENT_H
+#endif // IWEBSOCKETCLIENT_HPP
 

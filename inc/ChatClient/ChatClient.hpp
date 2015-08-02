@@ -1,10 +1,10 @@
-#ifndef CHATCLIENT_H
-#define CHATCLIENT_H
+#ifndef CHATCLIENT_HPP
+#define CHATCLIENT_HPP
 
 #include <memory>
 #include <list>
 
-#include "ChatClient/IChatClient.h"
+#include "ChatClient/IChatClient.hpp"
 
 class IChatClientListener;
 class ChatClientImpl;
@@ -33,4 +33,4 @@ private:
 };
 
 
-#endif //CHATCLIENT_H
+#endif //CHATCLIENT_HPP

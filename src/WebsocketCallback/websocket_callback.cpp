@@ -1,5 +1,5 @@
-#include "WebsocketCallback/websocket_callback.h"
-#include "WebsocketCallback/IWebsocketCallbackListener.h"
+#include "WebsocketCallback/websocket_callback.hpp"
+#include "WebsocketCallback/IWebsocketCallbackListener.hpp"
 
 int websocket_callback(libwebsocket_context*         context,
                        libwebsocket*                 wsi,
