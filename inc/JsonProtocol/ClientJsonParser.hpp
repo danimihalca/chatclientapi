@@ -20,6 +20,8 @@ public:
     Authentication_Status getAuthenticationStatus();
     UserDetails getUserDetails();
     Contacts getContacts();
+    Message getMessage();
+
 private:
     Json::CharReader* p_reader;
     Json::Value m_root;

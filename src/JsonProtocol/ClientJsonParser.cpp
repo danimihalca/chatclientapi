@@ -67,3 +67,11 @@ Contacts ClientJsonParser::getContacts()
 
     return contacts;
 }
+
+Message ClientJsonParser::getMessage()
+{
+    int senderId = m_root[MESSAGE][MESSAGE_SENDER_ID].asInt();
+    std::string messageText = m_root[MESSAGE][MESSAGE_TEXT].asString();
+
+    return Message(senderId,messageText);
+}

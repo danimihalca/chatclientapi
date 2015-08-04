@@ -16,6 +16,7 @@ public:
 public:
     std::string createLoginJsonString(const UserCredentials& userCredentials);
     std::string createGetContactsRequestJsonString(const User& user);
+    std::string createSendMessageJsonString(const Message& message);
 
 private:
     Json::StreamWriter* p_writer;

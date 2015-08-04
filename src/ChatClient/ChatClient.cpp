@@ -23,9 +23,9 @@ void ChatClient::login(const std::string& user, const std::string& password)
 
 }
 
-void ChatClient::sendMessage(const std::string& message)
+void ChatClient::sendMessage(int receiverId, const std::string& message)
 {
-    p_impl->sendMessage(message);
+    p_impl->sendMessage(receiverId,message);
 }
 
 void ChatClient::getContacts()

@@ -8,6 +8,8 @@
 
 #include <debug_utils/log_debug.hpp>
 
+#include <Model/Message.hpp>
+
 ChatClientImpl::ChatClientImpl() :
     m_user(),
     m_state(INITIAL),
@@ -56,14 +58,17 @@ void ChatClientImpl::login(const std::string& userName,
     }
 }
 
-void ChatClientImpl::sendMessage(const std::string& message)
+void ChatClientImpl::sendMessage(int receiverId, const std::string& message)
 {
-    p_websocketClient->sendMessage(message);
+    Message m(message,receiverId);
+    std::string sendMessageJson = p_jsonFactory->createSendMessageJsonString(m);
+    p_websocketClient->sendMessage(sendMessageJson);
 }
 
 void ChatClientImpl::getContacts()
 {
-    std::string requestJson = p_jsonFactory->createGetContactsRequestJsonString(m_user);
+    std::string requestJson = p_jsonFactory->createGetContactsRequestJsonString(
+        m_user);
 
     p_websocketClient->sendMessage(requestJson);
 }
@@ -100,6 +105,17 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
         case GET_CONTACTS_RESPONSE:
         {
             handleGetContactsResponse();
+            break;
+        }
+
+        case RECEIVE_MESSAGE:
+        {
+            Message message = p_jsonParser->getMessage();
+            LOG_DEBUG("M:%s\n",message.getMessageText().c_str());
+            for (auto listener: m_clientListeners)
+            {
+                listener->onMessageReceived(message.getMessageText());
+            }
             break;
         }
 
