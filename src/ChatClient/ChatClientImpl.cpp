@@ -114,7 +114,7 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
             LOG_DEBUG("M:%s\n",message.getMessageText().c_str());
             for (auto listener: m_clientListeners)
             {
-                listener->onMessageReceived(message.getMessageText());
+                listener->onMessageReceived(message.getSenderId(),message.getMessageText());
             }
             break;
         }

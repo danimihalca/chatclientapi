@@ -8,7 +8,7 @@
 class IChatClientListener
 {
 public:
-    virtual void onMessageReceived(const std::string& message) = 0;
+    virtual void onMessageReceived(int senderId, const std::string& message) = 0;
     virtual void onConnected() = 0;
     virtual void onLoginSuccessful() = 0;
     virtual void onLoginFailed(const std::string& message) = 0;
