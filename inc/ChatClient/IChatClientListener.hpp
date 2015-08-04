@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include <Model/User.hpp>
+
 class IChatClientListener
 {
 public:
@@ -12,6 +14,7 @@ public:
     virtual void onLoginFailed(const std::string& message) = 0;
     virtual void onConnectionError() = 0;
     virtual void onDisconnected() = 0;
+    virtual void onContactsReceived(const Contacts& contacts) = 0;
     virtual ~IChatClientListener()
     {
     }

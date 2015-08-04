@@ -194,4 +194,9 @@ void ChatClientImpl::handleGetContactsResponse()
     {
         LOG_DEBUG("Contact: %s\n", contact.getUserName().c_str());
     }
+
+    for (auto listener: m_clientListeners)
+    {
+        listener->onContactsReceived(contacts);
+    }
 }
