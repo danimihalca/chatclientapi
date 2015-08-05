@@ -75,3 +75,8 @@ Message ClientJsonParser::getMessage()
 
     return Message(senderId,messageText);
 }
+
+int ClientJsonParser::getUserId()
+{
+    return m_root[USER_ID].asInt();
+}

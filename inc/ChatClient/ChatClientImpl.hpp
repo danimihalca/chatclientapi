@@ -43,10 +43,10 @@ public:
     void sendMessage(int receiverId, const std::string& message);
     void getContacts();
     void disconnect();
-    void addChatClientListener(std::shared_ptr<IChatClientListener>& listener);
-    void removeChatClientListener(std::shared_ptr<IChatClientListener>& listener);
+    void addListener(std::shared_ptr<IChatClientListener>& listener);
+    void removeListener(std::shared_ptr<IChatClientListener>& listener);
 
-    // Implements IWebsocketClientListener
+    // Implements IWebsocketClientListener interface
 public:
     void onMessageReceived(const std::string& message);
     void onConnected();
@@ -57,6 +57,9 @@ private:
     void performLogin();
     void handleLoginResponse();
     void handleGetContactsResponse();
+    void handleReceiveMessage();
+    void handleContactOnlineStatusChanged(bool isOnline);
+
 private:
     User m_user;
     Chat_Client_State m_state;

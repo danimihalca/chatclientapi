@@ -21,6 +21,7 @@ public:
     UserDetails getUserDetails();
     Contacts getContacts();
     Message getMessage();
+    int getUserId();
 
 private:
     Json::CharReader* p_reader;

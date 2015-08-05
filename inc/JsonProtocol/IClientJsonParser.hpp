@@ -17,6 +17,7 @@ public:
     virtual UserDetails getUserDetails() = 0;
     virtual Contacts getContacts() = 0;
     virtual Message getMessage() = 0;
+    virtual int getUserId() = 0;
 
     virtual ~IClientJsonParser()
     {

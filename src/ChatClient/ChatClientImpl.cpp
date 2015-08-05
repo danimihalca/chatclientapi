@@ -73,13 +73,13 @@ void ChatClientImpl::getContacts()
     p_websocketClient->sendMessage(requestJson);
 }
 
-void ChatClientImpl::addChatClientListener(
+void ChatClientImpl::addListener(
     std::shared_ptr<IChatClientListener>& listener)
 {
     m_clientListeners.push_back(listener);
 }
 
-void ChatClientImpl::removeChatClientListener(
+void ChatClientImpl::removeListener(
     std::shared_ptr<IChatClientListener>& listener)
 {
     m_clientListeners.remove(listener);
@@ -110,12 +110,17 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
 
         case RECEIVE_MESSAGE:
         {
-            Message message = p_jsonParser->getMessage();
-            LOG_DEBUG("M:%s\n",message.getMessageText().c_str());
-            for (auto listener: m_clientListeners)
-            {
-                listener->onMessageReceived(message.getSenderId(),message.getMessageText());
-            }
+            handleReceiveMessage();
+            break;
+        }
+        case CONTACT_LOGGED_IN:
+        {
+            handleContactOnlineStatusChanged(true);
+            break;
+        }
+        case CONTACT_LOGGED_OUT:
+        {
+            handleContactOnlineStatusChanged(false);
             break;
         }
 
@@ -214,5 +219,25 @@ void ChatClientImpl::handleGetContactsResponse()
     for (auto listener: m_clientListeners)
     {
         listener->onContactsReceived(contacts);
+    }
+}
+
+void ChatClientImpl::handleReceiveMessage()
+{
+    Message message = p_jsonParser->getMessage();
+    LOG_DEBUG("M:%s\n",message.getMessageText().c_str());
+    for (auto listener: m_clientListeners)
+    {
+        listener->onMessageReceived(message.getSenderId(),message.getMessageText());
+    }
+}
+
+void ChatClientImpl::handleContactOnlineStatusChanged(bool isOnline)
+{
+    int userId = p_jsonParser->getUserId();
+    LOG_DEBUG("%d %d\n",userId,isOnline);
+    for (auto listener: m_clientListeners)
+    {
+        listener->onContactOnlineStatusChanged(userId, isOnline);
     }
 }

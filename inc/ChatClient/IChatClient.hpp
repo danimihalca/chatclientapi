@@ -18,10 +18,11 @@ public:
     virtual void sendMessage(int receiverId, const std::string& message) = 0;
     virtual void getContacts() = 0;
     virtual void disconnect() = 0;
-    virtual void addChatClientListener(
-        std::shared_ptr<IChatClientListener>& listener) = 0;
-    virtual void removeChatClientListener(
-        std::shared_ptr<IChatClientListener>& listener) = 0;
+    virtual void addListener(std::shared_ptr<IChatClientListener>& listener) =
+        0;
+    virtual void removeListener(std::shared_ptr<IChatClientListener>& listener)
+        = 0;
+
     virtual ~IChatClient()
     {
     }

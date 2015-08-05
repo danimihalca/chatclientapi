@@ -15,6 +15,7 @@ public:
     virtual void onConnectionError() = 0;
     virtual void onDisconnected() = 0;
     virtual void onContactsReceived(const Contacts& contacts) = 0;
+    virtual void onContactOnlineStatusChanged(int contactId, bool isOnline) = 0;
     virtual ~IChatClientListener()
     {
     }
