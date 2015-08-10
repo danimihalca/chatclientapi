@@ -177,10 +177,10 @@ IResponseJson* ClientJsonParser::getReceiveContactsJson()
     int count = 0;
     for (auto& contactJson: contactsJson)
     {
-        contacts[count++] = Contact(contactJson[CONTACT][ID].asInt(),
-                                    contactJson[CONTACT][USERNAME].asString(),
-                                    contactJson[CONTACT][FIRSTNAME].asString(),
-                                    contactJson[CONTACT][LASTNAME].asString(),
+        contacts[count++] = Contact(contactJson[ID].asInt(),
+                                    contactJson[USERNAME].asString(),
+                                    contactJson[FIRSTNAME].asString(),
+                                    contactJson[LASTNAME].asString(),
                                     static_cast<CONTACT_STATE>(contactJson[
                                                                    CONTACT][
                                                                    STATE].asInt()));

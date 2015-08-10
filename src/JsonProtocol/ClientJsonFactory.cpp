@@ -28,10 +28,8 @@ std::string ClientJsonFactory::createLoginJsonString(
     root[REQUEST_ACTION] = REQUEST_LOGIN;
     Json::Value content;
     Json::Value userCredentialsJson;
-    userCredentialsJson[USERNAME] = Json::valueToQuotedString(
-        userCredentials.getUserName().c_str());
-    userCredentialsJson[PASSWORD] = Json::valueToQuotedString(
-        userCredentials.getPassword().c_str());
+    userCredentialsJson[USERNAME] = userCredentials.getUserName();
+    userCredentialsJson[PASSWORD] = userCredentials.getPassword();
     content[USER_CREDENTIALS] = userCredentialsJson;
 
     root[CONTENT] = content;

@@ -209,10 +209,10 @@ void ChatClientImpl::handleLoginResponse(LoginResponseJson* responseJson)
 void ChatClientImpl::handleReceiveContacts(ReceiveContactsJson* responseJson)
 {
     const std::vector<Contact>& contacts = responseJson->getContacts();
-//    for(Contact contact: contacts)
-//    {
-//        LOG_DEBUG("Contact: %s\n", contact.getUserName().c_str());
-//    }
+    for(Contact contact: contacts)
+    {
+        LOG_DEBUG("Contact: %s\n", contact.getUserName().c_str());
+    }
 
     for (auto listener: m_clientListeners)
     {
