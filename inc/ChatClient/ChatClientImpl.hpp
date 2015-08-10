@@ -43,8 +43,8 @@ public:
     void sendMessage(int receiverId, const std::string& message);
     void getContacts();
     void disconnect();
-    void addListener(std::shared_ptr<IChatClientListener>& listener);
-    void removeListener(std::shared_ptr<IChatClientListener>& listener);
+    void addListener(IChatClientListener* listener);
+    void removeListener(IChatClientListener* listener);
 
     // Implements IWebsocketClientListener interface
 public:
@@ -64,7 +64,7 @@ private:
     User m_user;
     Chat_Client_State m_state;
     std::unique_ptr<IWebsocketClient> p_websocketClient;
-    std::list<std::shared_ptr<IChatClientListener> > m_clientListeners;
+    std::list<IChatClientListener*> m_clientListeners;
     std::unique_ptr<IClientJsonFactory> p_jsonFactory;
     std::unique_ptr<IClientJsonParser> p_jsonParser;
 };

@@ -24,8 +24,8 @@ public:
     void sendMessage(int receiverId, const std::string& message);
     void getContacts();
     void disconnect();
-    void addListener(std::shared_ptr<IChatClientListener>& listener);
-    void removeListener(std::shared_ptr<IChatClientListener>& listener);
+    void addListener(IChatClientListener* listener);
+    void removeListener(IChatClientListener* listener);
 
 private:
     //opaque pointer to actual implementation to reduce compile-time dependencies

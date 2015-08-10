@@ -33,12 +33,12 @@ void ChatClient::getContacts()
     p_impl->getContacts();
 }
 
-void ChatClient::addListener(std::shared_ptr<IChatClientListener>& listener)
+void ChatClient::addListener(IChatClientListener* listener)
 {
     p_impl->addListener(listener);
 }
 
-void ChatClient::removeListener(std::shared_ptr<IChatClientListener>& listener)
+void ChatClient::removeListener(IChatClientListener* listener)
 {
     p_impl->removeListener(listener);
 }

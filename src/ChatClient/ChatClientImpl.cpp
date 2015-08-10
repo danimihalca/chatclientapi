@@ -73,14 +73,12 @@ void ChatClientImpl::getContacts()
     p_websocketClient->sendMessage(requestJson);
 }
 
-void ChatClientImpl::addListener(
-    std::shared_ptr<IChatClientListener>& listener)
+void ChatClientImpl::addListener(IChatClientListener* listener)
 {
     m_clientListeners.push_back(listener);
 }
 
-void ChatClientImpl::removeListener(
-    std::shared_ptr<IChatClientListener>& listener)
+void ChatClientImpl::removeListener(IChatClientListener* listener)
 {
     m_clientListeners.remove(listener);
 }
