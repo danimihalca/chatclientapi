@@ -38,22 +38,22 @@ void WebsocketClient::initialize()
     b_initialized = true;
 }
 
-bool WebsocketClient::connect()
+void WebsocketClient::connect(const std::string& address, uint16_t port)
 {
     if(!b_initialized)
     {
         initialize();
     }
-    b_notifiedConnectionError = false;
+//    b_notifiedConnectionError = false;
     memset(data.buf,0,sizeof(data.buf));
     data.len = 0;
     int use_ssl = 0;
     struct libwebsocket* wsi = libwebsocket_client_connect_extended(p_context,
-                                                                    m_address.c_str(),
-                                                                    m_port,
+                                                                    address.c_str(),
+                                                                    port,
                                                                     use_ssl,
                                                                     "/",
-                                                                    m_address.c_str(),
+                                                                    address.c_str(),
                                                                     "origin",
                                                                     NULL,
                                                                     -1,
@@ -62,13 +62,12 @@ bool WebsocketClient::connect()
     if(!wsi)
     {
         LOG_DEBUG("Client failed to connect to %s:%u\n",
-                 m_address.c_str(), m_port);
+                 address.c_str(), port);
         onConnectionError();
-        return false;
+        return;
     }
-    LOG_DEBUG("Client connecting to %s:%u\n", m_address.c_str(), m_port);
+    LOG_DEBUG("Client connecting to %s:%u\n", address.c_str(), port);
     startService();
-    return true;
 }
 
 void WebsocketClient::startService()
@@ -109,13 +108,13 @@ void WebsocketClient::closeConnection()
 
 }
 
-void WebsocketClient::addWebsocketClientListener(
+void WebsocketClient::addListener(
     IWebsocketClientListener* listener)
 {
     m_websocketListeners.push_back(listener);
 }
 
-void WebsocketClient::removeWebsocketClientListener(
+void WebsocketClient::removeListener(
     IWebsocketClientListener* listener)
 {
     m_websocketListeners.remove(listener);
@@ -128,13 +127,6 @@ WebsocketClient::~WebsocketClient()
         closeConnection();
     }
 
-}
-
-void WebsocketClient::setServerProperties(const std::string& address,
-                                          uint16_t           port)
-{
-    m_address = address;
-    m_port = port;
 }
 
 void WebsocketClient::onMessageReceived(const std::string& message)
@@ -168,15 +160,15 @@ void WebsocketClient::onDisconnected()
 
 void WebsocketClient::onConnectionError()
 {
-    if (!b_notifiedConnectionError)
-    {
+//    if (!b_notifiedConnectionError)
+//    {
         for (auto listener: m_websocketListeners)
         {
             listener->onConnectionError();
         }
-        b_notifiedConnectionError = true;
+//        b_notifiedConnectionError = true;
         b_running = false;
-    }
+//    }
 }
 
 void WebsocketClient::run()

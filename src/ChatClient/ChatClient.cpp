@@ -11,15 +11,15 @@ ChatClient::~ChatClient()
     p_impl.release();
 }
 
-void ChatClient::setServerProperties(const std::string& address, uint16_t port)
+void ChatClient::connect(const std::string& address, uint16_t port)
 {
-    p_impl->setServerProperties(address, port);
+    p_impl->connect(address, port);
 
 }
 
-void ChatClient::login(const std::string& user, const std::string& password)
+void ChatClient::login(const UserCredentials& userCredentials)
 {
-    p_impl->login(user, password);
+    p_impl->login(userCredentials);
 
 }
 

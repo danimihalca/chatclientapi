@@ -15,18 +15,24 @@ public:
 
     // Implements IJsonParser interface
 public:
-    bool parseJsonString(const std::string& json);
-    Chat_Action_Type getActionType();
-    Authentication_Status getAuthenticationStatus();
-    UserDetails getUserDetails();
-    Contacts getContacts();
-    Message getMessage();
-    int getUserId();
+    bool trySetJsonString(const std::string& json);
+    RESPONSE_ACTION_TYPE getActionType();
+    IResponseJson* tryGetResponseJson(RESPONSE_ACTION_TYPE type);
+
+
+private:
+    IResponseJson* getLoginResponseJson();
+    IResponseJson* getContactStateChangedJson();
+    IResponseJson* getReceiveMessageJson();
+    IResponseJson* getReceiveContactsJson();
 
 private:
     Json::CharReader* p_reader;
     Json::Value m_root;
 
+
+    // IClientJsonParser interface
+public:
 };
 
 #endif // CLIENTJSONPARSER_HPP

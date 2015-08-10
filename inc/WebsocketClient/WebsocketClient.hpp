@@ -24,14 +24,13 @@ public:
 
     //Implements IWebsocketClient
 public:
-    void setServerProperties(const std::string& address, uint16_t port);
     void initialize();
-    bool connect();
+    void connect(const std::string& address, uint16_t port);
     void startService();
     void sendMessage(const std::string& message);
     void closeConnection();
-    void addWebsocketClientListener(IWebsocketClientListener* listener);
-    void removeWebsocketClientListener(IWebsocketClientListener* listener);
+    void addListener(IWebsocketClientListener* listener);
+    void removeListener(IWebsocketClientListener* listener);
 
     //Implements IWebsocketClientCallbackListener
 public:
@@ -44,9 +43,6 @@ private:
     void run();
 
 private:
-    std::string m_address;
-    uint16_t m_port;
-
     //libwebsockets specific objects
     struct libwebsocket_context* p_context;
     struct libwebsocket_protocols m_protocols[2];
@@ -58,7 +54,7 @@ private:
     bool b_connected = false;
     bool b_running = false;
     bool b_initialized = false;
-    bool b_notifiedConnectionError = false;
+//    bool b_notifiedConnectionError = false;
 
     std::list<IWebsocketClientListener*> m_websocketListeners;
 };

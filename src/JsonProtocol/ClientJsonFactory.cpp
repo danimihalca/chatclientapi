@@ -20,43 +20,52 @@ ClientJsonFactory::~ClientJsonFactory()
     delete p_writer;
 }
 
-std::string ClientJsonFactory::createLoginJsonString(const UserCredentials& userCredentials)
+std::string ClientJsonFactory::createLoginJsonString(
+    const UserCredentials& userCredentials)
 {
     m_outputStream.str("");
     Json::Value root;
-    root[ACTION] = LOGIN_REQUEST;
+    root[REQUEST_ACTION] = REQUEST_LOGIN;
+    Json::Value content;
     Json::Value userCredentialsJson;
-    userCredentialsJson[USER_USERNAME] = userCredentials.getUserName();
-    userCredentialsJson[USER_PASSWORD] = userCredentials.getPassword();
-    root[USER_CREDENTIALS] = userCredentialsJson;
+    userCredentialsJson[USERNAME] = Json::valueToQuotedString(
+        userCredentials.getUserName().c_str());
+    userCredentialsJson[PASSWORD] = Json::valueToQuotedString(
+        userCredentials.getPassword().c_str());
+    content[USER_CREDENTIALS] = userCredentialsJson;
+
+    root[CONTENT] = content;
     p_writer->write(root,&m_outputStream);
 
     return m_outputStream.str();
 }
 
 
-std::string ClientJsonFactory::createGetContactsRequestJsonString(const User& user)
+std::string ClientJsonFactory::createRequestContactsJsonString()
 {
     m_outputStream.str("");
     Json::Value root;
-    root[ACTION] = GET_CONTACTS_REQUEST;
+    root[REQUEST_ACTION] = REQUEST_GET_CONTACTS;
     p_writer->write(root,&m_outputStream);
 
     return m_outputStream.str();
 }
 
-std::string ClientJsonFactory::createSendMessageJsonString(const Message& message)
+std::string ClientJsonFactory::createSendMessageJsonString(
+    const Message& message)
 {
     m_outputStream.str("");
     Json::Value root;
-    root[ACTION] = SEND_MESSAGE;
+    root[REQUEST_ACTION] = REQUEST_SEND_MESSAGE;
+    Json::Value content;
 
     Json::Value messageJson;
 
-    messageJson[MESSAGE_RECEIVER_ID] = message.getReceiverId();
+    messageJson[RECEIVER_ID] = message.getReceiverId();
     messageJson[MESSAGE_TEXT] = message.getMessageText();
 
-    root[MESSAGE] = messageJson;
+    root[CONTENT] = content;
+    content[MESSAGE] = messageJson;
     p_writer->write(root,&m_outputStream);
 
     return m_outputStream.str();

@@ -8,16 +8,15 @@
 #include <Model/User.hpp>
 #include <Model/Message.hpp>
 
+class IResponseJson;
+
 class IClientJsonParser
 {
 public:
-    virtual bool parseJsonString(const std::string& json) = 0;
-    virtual Chat_Action_Type getActionType() = 0;
-    virtual Authentication_Status getAuthenticationStatus() = 0;
-    virtual UserDetails getUserDetails() = 0;
-    virtual Contacts getContacts() = 0;
-    virtual Message getMessage() = 0;
-    virtual int getUserId() = 0;
+    virtual bool trySetJsonString(const std::string& json) = 0;
+    virtual RESPONSE_ACTION_TYPE getActionType() = 0;
+    virtual IResponseJson* tryGetResponseJson(RESPONSE_ACTION_TYPE type) = 0;
+
 
     virtual ~IClientJsonParser()
     {

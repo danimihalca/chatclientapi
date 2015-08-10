@@ -15,7 +15,7 @@ public:
     // Implements IClientJsonFactory interface
 public:
     std::string createLoginJsonString(const UserCredentials& userCredentials);
-    std::string createGetContactsRequestJsonString(const User& user);
+    std::string createRequestContactsJsonString();
     std::string createSendMessageJsonString(const Message& message);
 
 private:

@@ -14,6 +14,11 @@ class IClientJsonFactory;
 class IClientJsonParser;
 class IWebsocketClient;
 
+class IResponseJson;
+class LoginResponseJson;
+class ContactStateChangedJson;
+class ReceiveMessageJson;
+class ReceiveContactsJson;
 
 class ChatClientImpl :
     public IChatClient,
@@ -38,8 +43,8 @@ public:
 
     // Implements IChatClient interface
 public:
-    void setServerProperties(const std::string& address, uint16_t port);
-    void login(const std::string& user, const std::string& password);
+    void connect(const std::string& address, uint16_t port);
+    void login(const UserCredentials& userCredentials);
     void sendMessage(int receiverId, const std::string& message);
     void getContacts();
     void disconnect();
@@ -54,14 +59,12 @@ public:
     void onConnectionError();
 
 private:
-    void performLogin();
-    void handleLoginResponse();
-    void handleGetContactsResponse();
-    void handleReceiveMessage();
-    void handleContactOnlineStatusChanged(bool isOnline);
+    void handleLoginResponse(LoginResponseJson* loginResponseJson);
+    void handleReceiveContacts(ReceiveContactsJson* responseJson);
+    void handleReceiveMessage(ReceiveMessageJson* responseJson);
+    void handleContactStateChanged(ContactStateChangedJson* responseJson);
 
 private:
-    User m_user;
     Chat_Client_State m_state;
     std::unique_ptr<IWebsocketClient> p_websocketClient;
     std::list<IChatClientListener*> m_clientListeners;
