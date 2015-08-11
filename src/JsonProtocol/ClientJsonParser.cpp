@@ -60,7 +60,7 @@ IResponseJson* ClientJsonParser::tryGetResponseJson(RESPONSE_ACTION_TYPE type)
             return getContactStateChangedJson();
         }
 
-        case REQUEST_SEND_MESSAGE:
+        case RESPONSE_SEND_MESSAGE:
         {
             return getReceiveMessageJson();
         }
@@ -181,9 +181,8 @@ IResponseJson* ClientJsonParser::getReceiveContactsJson()
                                     contactJson[USERNAME].asString(),
                                     contactJson[FIRSTNAME].asString(),
                                     contactJson[LASTNAME].asString(),
-                                    static_cast<CONTACT_STATE>(contactJson[
-                                                                   CONTACT][
-                                                                   STATE].asInt()));
+                                    static_cast<CONTACT_STATE>(contactJson[STATE]
+                                                               .asInt()));
     }
 
 

@@ -62,8 +62,8 @@ std::string ClientJsonFactory::createSendMessageJsonString(
     messageJson[RECEIVER_ID] = message.getReceiverId();
     messageJson[MESSAGE_TEXT] = message.getMessageText();
 
-    root[CONTENT] = content;
     content[MESSAGE] = messageJson;
+    root[CONTENT] = content;
     p_writer->write(root,&m_outputStream);
 
     return m_outputStream.str();
