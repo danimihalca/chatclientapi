@@ -96,12 +96,14 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
 {
     p_jsonParser->trySetJsonString(message);
     RESPONSE_ACTION_TYPE action = p_jsonParser->getActionType();
+//    LoginResponseJson a;
     switch (action)
     {
         case RESPONSE_LOGIN:
         {
-
+//            a = p_jsonParser->tryGetLoginResponseJson();
             handleLoginResponse(p_jsonParser->tryGetLoginResponseJson());
+            LOG_DEBUG("after resp log\n");
             break;
         }
 
@@ -129,6 +131,7 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
             break;
         }
     }
+    LOG_DEBUG("end meth\n");
 }
 
 void ChatClientImpl::onConnected()
@@ -182,19 +185,24 @@ void ChatClientImpl::handleLoginResponse(const LoginResponseJson& responseJson)
             {
                 listener->onLoginFailed("INVALID CREDENTIALS");
             }
+            LOG_DEBUG_METHOD;
             break;
         }
 
         case AUTH_ALREADY_LOGGED_IN:
         {
             m_state = LOG_IN_ERROR;
-            for (auto listener: m_clientListeners)
+            for (IChatClientListener* listener: m_clientListeners)
             {
+                LOG_DEBUG("Before\n");
                 listener->onLoginFailed("USER ALREADY LOGGED IN");
+                LOG_DEBUG("After\n");
             }
+            LOG_DEBUG("it fin\n");
             break;
         }
     }
+    LOG_DEBUG("meth end\n");
 }
 
 void ChatClientImpl::handleReceiveContacts(const ReceiveContactsJson& responseJson)

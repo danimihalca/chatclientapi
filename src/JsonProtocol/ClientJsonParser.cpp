@@ -47,9 +47,12 @@ LoginResponseJson ClientJsonParser::tryGetLoginResponseJson()
         static_cast<AUTH_STATUS>(content[AUTHENTICATION_STATUS].asInt());
 
     UserDetails userDetails;
-    userDetails.setId(content[USER_DETAILS][ID].asInt());
-    userDetails.setFirstName(content[USER_DETAILS][FIRSTNAME].asString());
-    userDetails.setLastName(content[USER_DETAILS][LASTNAME].asString());
+    if (status == AUTH_SUCCESSFUL)
+    {
+        userDetails.setId(content[USER_DETAILS][ID].asInt());
+        userDetails.setFirstName(content[USER_DETAILS][FIRSTNAME].asString());
+        userDetails.setLastName(content[USER_DETAILS][LASTNAME].asString());
+    }
 
     LoginResponseJson responseJson;
     responseJson.setAutheticationStatus(status);

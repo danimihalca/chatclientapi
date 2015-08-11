@@ -1,6 +1,8 @@
 #include "WebsocketCallback/websocket_callback.hpp"
 #include "WebsocketCallback/IWebsocketCallbackListener.hpp"
 
+#include <debug_utils/log_debug.hpp>
+
 int websocket_callback(libwebsocket_context*         context,
                        libwebsocket*                 wsi,
                        libwebsocket_callback_reasons reason,
@@ -52,6 +54,7 @@ int websocket_callback(libwebsocket_context*         context,
             {
                 listener->onMessageReceived((char*)in);
             }
+            LOG_DEBUG_METHOD;
             break;
         }
 
@@ -83,5 +86,6 @@ int websocket_callback(libwebsocket_context*         context,
 
     }
 
+    LOG_DEBUG_METHOD;
     return 0;
 }

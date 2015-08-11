@@ -135,6 +135,7 @@ void WebsocketClient::onMessageReceived(const std::string& message)
     {
         listener->onMessageReceived(message);
     }
+    LOG_DEBUG_METHOD;
 }
 
 void WebsocketClient::onConnected()
