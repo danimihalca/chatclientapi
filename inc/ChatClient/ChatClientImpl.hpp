@@ -14,11 +14,10 @@ class IClientJsonFactory;
 class IClientJsonParser;
 class IWebsocketClient;
 
-class IResponseJson;
-class LoginResponseJson;
-class ContactStateChangedJson;
-class ReceiveMessageJson;
-class ReceiveContactsJson;
+#include <JsonChatProtocol/json_response/LoginResponseJson.hpp>
+#include <JsonChatProtocol/json_response/ContactStateChangedJson.hpp>
+#include <JsonChatProtocol/json_response/ReceiveMessageJson.hpp>
+#include <JsonChatProtocol/json_response/ReceiveContactsJson.hpp>
 
 class ChatClientImpl :
     public IChatClient,
@@ -59,10 +58,10 @@ public:
     void onConnectionError();
 
 private:
-    void handleLoginResponse(LoginResponseJson* loginResponseJson);
-    void handleReceiveContacts(ReceiveContactsJson* responseJson);
-    void handleReceiveMessage(ReceiveMessageJson* responseJson);
-    void handleContactStateChanged(ContactStateChangedJson* responseJson);
+    void handleLoginResponse(const LoginResponseJson& loginResponseJson);
+    void handleReceiveContacts(const ReceiveContactsJson& responseJson);
+    void handleReceiveMessage(const ReceiveMessageJson& responseJson);
+    void handleContactStateChanged(const ContactStateChangedJson& responseJson);
 
 private:
     Chat_Client_State m_state;

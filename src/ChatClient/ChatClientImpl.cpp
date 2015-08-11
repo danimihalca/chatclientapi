@@ -96,38 +96,30 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
 {
     p_jsonParser->trySetJsonString(message);
     RESPONSE_ACTION_TYPE action = p_jsonParser->getActionType();
-    IResponseJson* responseJson = p_jsonParser->tryGetResponseJson(action);
     switch (action)
     {
         case RESPONSE_LOGIN:
         {
-            LoginResponseJson* loginResponseJson =
-                static_cast<LoginResponseJson*>(responseJson);
-            handleLoginResponse(loginResponseJson);
+
+            handleLoginResponse(p_jsonParser->tryGetLoginResponseJson());
             break;
         }
 
         case RESPONSE_GET_CONTACTS:
         {
-            ReceiveContactsJson* receiveContactsJson =
-                static_cast<ReceiveContactsJson*>(responseJson);
-            handleReceiveContacts(receiveContactsJson);
+            handleReceiveContacts(p_jsonParser->tryGetReceiveContactsJson());
             break;
         }
 
         case RESPONSE_SEND_MESSAGE:
         {
-            ReceiveMessageJson* receiveMessageJson =
-                static_cast<ReceiveMessageJson*>(responseJson);
-            handleReceiveMessage(receiveMessageJson);
+            handleReceiveMessage(p_jsonParser->tryGetReceiveMessageJson());
             break;
         }
 
         case RESPONSE_CONTACT_STATE_CHANGED:
         {
-            ContactStateChangedJson* contactStateChangedJson =
-                static_cast<ContactStateChangedJson*>(responseJson);
-            handleContactStateChanged(contactStateChangedJson);
+            handleContactStateChanged(p_jsonParser->tryGetContactStateChangedJson());
             break;
         }
 
@@ -137,7 +129,6 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
             break;
         }
     }
-    delete responseJson;
 }
 
 void ChatClientImpl::onConnected()
@@ -167,10 +158,10 @@ void ChatClientImpl::onConnectionError()
     }
 }
 
-void ChatClientImpl::handleLoginResponse(LoginResponseJson* responseJson)
+void ChatClientImpl::handleLoginResponse(const LoginResponseJson& responseJson)
 {
 
-    AUTH_STATUS status = responseJson->getAutheticationStatus();
+    AUTH_STATUS status = responseJson.getAutheticationStatus();
     switch(status)
     {
         case AUTH_SUCCESSFUL:
@@ -179,7 +170,7 @@ void ChatClientImpl::handleLoginResponse(LoginResponseJson* responseJson)
             for (auto listener: m_clientListeners)
             {
                 listener->onLoginSuccessful(
-                    responseJson->getUserDetails());
+                    responseJson.getUserDetails());
             }
             break;
         }
@@ -206,9 +197,9 @@ void ChatClientImpl::handleLoginResponse(LoginResponseJson* responseJson)
     }
 }
 
-void ChatClientImpl::handleReceiveContacts(ReceiveContactsJson* responseJson)
+void ChatClientImpl::handleReceiveContacts(const ReceiveContactsJson& responseJson)
 {
-    const std::vector<Contact>& contacts = responseJson->getContacts();
+    const std::vector<Contact>& contacts = responseJson.getContacts();
     for(Contact contact: contacts)
     {
         LOG_DEBUG("Contact: %s\n", contact.getUserName().c_str());
@@ -220,9 +211,9 @@ void ChatClientImpl::handleReceiveContacts(ReceiveContactsJson* responseJson)
     }
 }
 
-void ChatClientImpl::handleReceiveMessage(ReceiveMessageJson* responseJson)
+void ChatClientImpl::handleReceiveMessage(const ReceiveMessageJson& responseJson)
 {
-    Message message = responseJson->getMessage();
+    Message message = responseJson.getMessage();
     LOG_DEBUG("M:%s\n",message.getMessageText().c_str());
     for (auto listener: m_clientListeners)
     {
@@ -230,10 +221,10 @@ void ChatClientImpl::handleReceiveMessage(ReceiveMessageJson* responseJson)
     }
 }
 
-void ChatClientImpl::handleContactStateChanged(ContactStateChangedJson* responseJson)
+void ChatClientImpl::handleContactStateChanged(const ContactStateChangedJson& responseJson)
 {
-    int contactId = responseJson->getContactId();
-    CONTACT_STATE contactState = responseJson->getContactState();
+    int contactId = responseJson.getContactId();
+    CONTACT_STATE contactState = responseJson.getContactState();
 //    LOG_DEBUG("%d %d\n",userId,jsonObject);
     for (auto listener: m_clientListeners)
     {

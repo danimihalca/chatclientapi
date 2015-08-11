@@ -7,6 +7,8 @@
 
 #include "IClientJsonParser.hpp"
 
+
+
 class ClientJsonParser: public IClientJsonParser
 {
 public:
@@ -17,14 +19,12 @@ public:
 public:
     bool trySetJsonString(const std::string& json);
     RESPONSE_ACTION_TYPE getActionType();
-    IResponseJson* tryGetResponseJson(RESPONSE_ACTION_TYPE type);
 
+    LoginResponseJson tryGetLoginResponseJson();
+    ContactStateChangedJson tryGetContactStateChangedJson();
+    ReceiveMessageJson tryGetReceiveMessageJson();
+    ReceiveContactsJson tryGetReceiveContactsJson();
 
-private:
-    IResponseJson* getLoginResponseJson();
-    IResponseJson* getContactStateChangedJson();
-    IResponseJson* getReceiveMessageJson();
-    IResponseJson* getReceiveContactsJson();
 
 private:
     Json::CharReader* p_reader;
