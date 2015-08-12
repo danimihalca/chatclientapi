@@ -294,6 +294,7 @@ bool ChatClientImpl::handleAddingByContact(const AddingByContactJson& responseJs
     for (IChatClientListener* listener: m_clientListeners)
     {
         listenerAccepted = listener->onAddingByContact(requester);
+		if (listenerAccepted)
         {
             return true;
         }
