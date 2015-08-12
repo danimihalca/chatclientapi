@@ -87,7 +87,7 @@ std::string ClientJsonFactory::createAddContactResolutionJsonString(const std::s
 {
     m_outputStream.str("");
     Json::Value root;
-    root[REQUEST_ACTION] = REQUEST_ADD_CONTACT;
+    root[REQUEST_ACTION] = REQUEST_ADD_CONTACT_RESOLUTION;
     Json::Value content;
 
     content[USERNAME] = userName;

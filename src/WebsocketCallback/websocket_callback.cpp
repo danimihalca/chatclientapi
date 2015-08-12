@@ -86,6 +86,6 @@ int websocket_callback(libwebsocket_context*         context,
 
     }
 
-    LOG_DEBUG_METHOD;
+    //LOG_DEBUG_METHOD;
     return 0;
 }
