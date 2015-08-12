@@ -17,6 +17,11 @@ public:
     std::string createLoginJsonString(const UserCredentials& userCredentials);
     std::string createRequestContactsJsonString();
     std::string createSendMessageJsonString(const Message& message);
+    std::string createAddContactJsonString(const std::string& userName);
+    std::string createAddContactResolutionJsonString(
+        const std::string& userName,
+        bool               accepted);
+    std::string createRemoveContactJsonString(int contactId);
 
 private:
     Json::StreamWriter* p_writer;

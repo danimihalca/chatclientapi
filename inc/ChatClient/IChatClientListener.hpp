@@ -17,6 +17,11 @@ public:
     virtual void onDisconnected() = 0;
     virtual void onContactsReceived(const std::vector<Contact>& contacts) = 0;
     virtual void onContactStateChanged(int contactId, CONTACT_STATE state) = 0;
+
+
+    virtual void onRemovedByContact(int contactId) = 0;
+    virtual void onAddContactResponse(const std::string& userName, bool accepted) =0;
+    virtual bool onAddingByContact(const std::string& requester) = 0;
     virtual ~IChatClientListener()
     {
     }

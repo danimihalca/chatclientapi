@@ -17,6 +17,17 @@ public:
     virtual std::string createSendMessageJsonString(const Message& message) =
         0;
 
+    virtual std::string createAddContactJsonString(const std::string& userName)
+        =
+            0;
+
+    virtual std::string createAddContactResolutionJsonString(
+        const std::string& userName,
+        bool               accepted) = 0;
+
+
+    virtual std::string createRemoveContactJsonString(int contactId) = 0;
+
     virtual ~IClientJsonFactory()
     {
     }

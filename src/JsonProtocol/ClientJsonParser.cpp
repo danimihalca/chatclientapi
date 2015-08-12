@@ -117,3 +117,36 @@ ReceiveContactsJson ClientJsonParser::tryGetReceiveContactsJson()
     return responseJson;
 
 }
+
+AddingByContactJson ClientJsonParser::tryGetAddingByContactJson()
+{
+    Json::Value content = m_root[CONTENT];
+
+    std::string userName = content[USERNAME].asString();
+
+    AddingByContactJson requestJson(userName);
+
+    return requestJson;
+}
+
+AddContactResponseJson ClientJsonParser::tryGetAddContactResponseJson()
+{
+    Json::Value content = m_root[CONTENT];
+
+    std::string userName = content[USERNAME].asString();
+    bool accepted = content["accepted"].asBool();
+    AddContactResponseJson requestJson(userName, accepted);
+
+    return requestJson;
+}
+
+RemovedByContactJson ClientJsonParser::tryGetRemovedByContactJson()
+{
+    Json::Value content = m_root[CONTENT];
+
+    int contactId = content[ID].asInt();
+
+    RemovedByContactJson requestJson(contactId);
+
+    return requestJson;
+}

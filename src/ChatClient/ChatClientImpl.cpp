@@ -70,7 +70,7 @@ void ChatClientImpl::sendMessage(int receiverId, const std::string& message)
     p_websocketClient->sendMessage(sendMessageJson);
 }
 
-void ChatClientImpl::getContacts()
+void ChatClientImpl::requestContacts()
 {
     std::string requestJson = p_jsonFactory->createRequestContactsJsonString();
 
@@ -90,6 +90,24 @@ void ChatClientImpl::removeListener(IChatClientListener* listener)
 void ChatClientImpl::disconnect()
 {
     p_websocketClient->closeConnection();
+}
+
+void ChatClientImpl::addContact(const std::string& userName)
+{
+    std::string requestJson =
+        p_jsonFactory->createAddContactJsonString(userName);
+
+    p_websocketClient->sendMessage(requestJson);
+
+}
+
+void ChatClientImpl::removeContact(int contactId)
+{
+    std::string requestJson = p_jsonFactory->createRemoveContactJsonString(
+        contactId);
+
+    p_websocketClient->sendMessage(requestJson);
+
 }
 
 void ChatClientImpl::onMessageReceived(const std::string& message)
@@ -121,7 +139,34 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
 
         case RESPONSE_CONTACT_STATE_CHANGED:
         {
-            handleContactStateChanged(p_jsonParser->tryGetContactStateChangedJson());
+            handleContactStateChanged(
+                p_jsonParser->tryGetContactStateChangedJson());
+            break;
+        }
+
+        case RESPONSE_ADD_CONTACT:
+        {
+
+            const AddingByContactJson& responseJson = p_jsonParser->tryGetAddingByContactJson();
+            bool accept = handleAddingByContact(responseJson);
+
+            std::string requestJson = p_jsonFactory->createAddContactResolutionJsonString(
+                                            (responseJson.getUserName()) , accept);
+
+            p_websocketClient->sendMessage(requestJson);
+            break;
+        }
+        case RESPONSE_ADD_CONTACT_RESOLUTION:
+        {
+            handleAddContactResponse(p_jsonParser->tryGetAddContactResponseJson());
+            //TODO: send add contact notification to listener and wait for result
+
+            break;
+        }
+
+        case RESPONSE_REMOVE_CONTACT:
+        {
+            handleRemovedByContact(p_jsonParser->tryGetRemovedByContactJson());
             break;
         }
 
@@ -205,7 +250,8 @@ void ChatClientImpl::handleLoginResponse(const LoginResponseJson& responseJson)
     LOG_DEBUG("meth end\n");
 }
 
-void ChatClientImpl::handleReceiveContacts(const ReceiveContactsJson& responseJson)
+void ChatClientImpl::handleReceiveContacts(
+    const ReceiveContactsJson& responseJson)
 {
     const std::vector<Contact>& contacts = responseJson.getContacts();
     for(Contact contact: contacts)
@@ -229,7 +275,8 @@ void ChatClientImpl::handleReceiveMessage(const ReceiveMessageJson& responseJson
     }
 }
 
-void ChatClientImpl::handleContactStateChanged(const ContactStateChangedJson& responseJson)
+void ChatClientImpl::handleContactStateChanged(
+    const ContactStateChangedJson& responseJson)
 {
     int contactId = responseJson.getContactId();
     CONTACT_STATE contactState = responseJson.getContactState();
@@ -239,3 +286,37 @@ void ChatClientImpl::handleContactStateChanged(const ContactStateChangedJson& re
         listener->onContactStateChanged(contactId, contactState);
     }
 }
+
+bool ChatClientImpl::handleAddingByContact(const AddingByContactJson& responseJson)
+{
+    bool listenerAccepted = false;
+    const std::string& requester = responseJson.getUserName();
+    for (IChatClientListener* listener: m_clientListeners)
+    {
+        listenerAccepted = listener->onAddingByContact(requester);
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void ChatClientImpl::handleAddContactResponse(const AddContactResponseJson& responseJson)
+{
+    const std::string& userName = responseJson.getUserName();
+    bool accepted = responseJson.hasAccepted();
+    for (IChatClientListener* listener: m_clientListeners)
+    {
+        listener->onAddContactResponse(userName,accepted);
+    }
+}
+
+void ChatClientImpl::handleRemovedByContact(const RemovedByContactJson& responseJson)
+{
+    int contactId = responseJson.getContactId();
+    for (IChatClientListener* listener: m_clientListeners)
+    {
+        listener->onRemovedByContact(contactId);
+    }
+}
+

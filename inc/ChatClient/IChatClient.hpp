@@ -17,8 +17,10 @@ public:
     virtual void connect(const std::string& address, uint16_t port) = 0;
     virtual void login(const UserCredentials& userCredentials) = 0;
     virtual void sendMessage(int receiverId, const std::string& message) = 0;
-    virtual void getContacts() = 0;
+    virtual void requestContacts() = 0;
     virtual void disconnect() = 0;
+    virtual void addContact(const std::string& userName) = 0;
+    virtual void removeContact(int contactId) = 0;
     virtual void addListener(IChatClientListener* listener) = 0;
     virtual void removeListener(IChatClientListener* listener) = 0;
 

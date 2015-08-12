@@ -25,14 +25,14 @@ public:
     ReceiveMessageJson tryGetReceiveMessageJson();
     ReceiveContactsJson tryGetReceiveContactsJson();
 
+    AddingByContactJson tryGetAddingByContactJson();
+    AddContactResponseJson tryGetAddContactResponseJson();
+    RemovedByContactJson tryGetRemovedByContactJson();
 
 private:
     Json::CharReader* p_reader;
     Json::Value m_root;
 
-
-    // IClientJsonParser interface
-public:
 };
 
 #endif // CLIENTJSONPARSER_HPP

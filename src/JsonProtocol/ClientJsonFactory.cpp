@@ -68,3 +68,46 @@ std::string ClientJsonFactory::createSendMessageJsonString(
 
     return m_outputStream.str();
 }
+
+std::string ClientJsonFactory::createAddContactJsonString(const std::string& userName)
+{
+    m_outputStream.str("");
+    Json::Value root;
+    root[REQUEST_ACTION] = REQUEST_ADD_CONTACT;
+    Json::Value content;
+
+    content[USERNAME] = userName;
+    root[CONTENT] = content;
+    p_writer->write(root,&m_outputStream);
+
+    return m_outputStream.str();
+}
+
+std::string ClientJsonFactory::createAddContactResolutionJsonString(const std::string& userName, bool accepted)
+{
+    m_outputStream.str("");
+    Json::Value root;
+    root[REQUEST_ACTION] = REQUEST_ADD_CONTACT;
+    Json::Value content;
+
+    content[USERNAME] = userName;
+    content[ACCEPTED] = accepted;
+    root[CONTENT] = content;
+    p_writer->write(root,&m_outputStream);
+
+    return m_outputStream.str();
+}
+
+std::string ClientJsonFactory::createRemoveContactJsonString(int contactId)
+{
+    m_outputStream.str("");
+    Json::Value root;
+    root[REQUEST_ACTION] = REQUEST_REMOVE_CONTACT;
+    Json::Value content;
+
+    content[ID] = contactId;
+    root[CONTENT] = content;
+    p_writer->write(root,&m_outputStream);
+
+    return m_outputStream.str();
+}

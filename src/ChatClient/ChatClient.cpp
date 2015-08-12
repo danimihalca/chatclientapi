@@ -28,9 +28,9 @@ void ChatClient::sendMessage(int receiverId, const std::string& message)
     p_impl->sendMessage(receiverId,message);
 }
 
-void ChatClient::getContacts()
+void ChatClient::requestContacts()
 {
-    p_impl->getContacts();
+    p_impl->requestContacts();
 }
 
 void ChatClient::addListener(IChatClientListener* listener)
@@ -46,4 +46,14 @@ void ChatClient::removeListener(IChatClientListener* listener)
 void ChatClient::disconnect()
 {
     p_impl->disconnect();
+}
+
+void ChatClient::addContact(const std::string& userName)
+{
+    p_impl->addContact(userName);
+}
+
+void ChatClient::removeContact(int contactId)
+{
+    p_impl->removeContact(contactId);
 }

@@ -22,8 +22,11 @@ public:
     void connect(const std::string& address, uint16_t port);
     void login(const UserCredentials& userCredentials);
     void sendMessage(int receiverId, const std::string& message);
-    void getContacts();
+    void requestContacts();
     void disconnect();
+    void addContact(const std::string& userName);
+    void removeContact(int contactId);
+
     void addListener(IChatClientListener* listener);
     void removeListener(IChatClientListener* listener);
 
