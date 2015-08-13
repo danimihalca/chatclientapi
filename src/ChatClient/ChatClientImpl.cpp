@@ -36,14 +36,15 @@ void ChatClientImpl::connect(const std::string& address,
     p_websocketClient->connect(address, port);
 }
 
-void ChatClientImpl::login(const UserCredentials& userCredentials)
+void ChatClientImpl::login(const UserCredentials& userCredentials,
+                           USER_STATE             state)
 {
 
     if (m_state == CONNECTED ||
         m_state == LOG_IN_ERROR)
     {
         std::string loginJSON = p_jsonFactory->createLoginJsonString(
-            userCredentials);
+            userCredentials,state);
         p_websocketClient->sendMessage(loginJSON);
 
         m_state = LOGGING_IN;
@@ -70,11 +71,30 @@ void ChatClientImpl::sendMessage(int receiverId, const std::string& message)
     p_websocketClient->sendMessage(sendMessageJson);
 }
 
+void ChatClientImpl::changeState(USER_STATE state)
+{
+    std::string requestJson = p_jsonFactory->createChangeStateJsonString(state);
+    p_websocketClient->sendMessage(requestJson);
+}
+
 void ChatClientImpl::requestContacts()
 {
     std::string requestJson = p_jsonFactory->createRequestContactsJsonString();
 
     p_websocketClient->sendMessage(requestJson);
+}
+
+void ChatClientImpl::updateUser(const User& user)
+{
+    std::string requestString = p_jsonFactory->createUpdateUserJsonString(user);
+    p_websocketClient->sendMessage(requestString);
+}
+
+void ChatClientImpl::registerUser(const User& user)
+{
+    std::string requestString =
+        p_jsonFactory->createRegisterUserJsonString(user);
+    p_websocketClient->sendMessage(requestString);
 }
 
 void ChatClientImpl::addListener(IChatClientListener* listener)
@@ -114,12 +134,12 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
 {
     p_jsonParser->trySetJsonString(message);
     RESPONSE_ACTION_TYPE action = p_jsonParser->getActionType();
-//    LoginResponseJson a;
     switch (action)
     {
+
         case RESPONSE_LOGIN:
         {
-//            a = p_jsonParser->tryGetLoginResponseJson();
+            //            a = p_jsonParser->tryGetLoginResponseJson();
             handleLoginResponse(p_jsonParser->tryGetLoginResponseJson());
             LOG_DEBUG("after resp log\n");
             break;
@@ -147,18 +167,22 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
         case RESPONSE_ADD_CONTACT:
         {
 
-            const AddingByContactJson& responseJson = p_jsonParser->tryGetAddingByContactJson();
+            const AddingByContactJson& responseJson =
+                p_jsonParser->tryGetAddingByContactJson();
             bool accept = handleAddingByContact(responseJson);
 
-            std::string requestJson = p_jsonFactory->createAddContactResolutionJsonString(
-                                            (responseJson.getUserName()) , accept);
+            std::string requestJson =
+                p_jsonFactory->createAddContactResolutionJsonString(
+                    (responseJson.getUserName()), accept);
 
             p_websocketClient->sendMessage(requestJson);
             break;
         }
+
         case RESPONSE_ADD_CONTACT_RESOLUTION:
         {
-            handleAddContactResponse(p_jsonParser->tryGetAddContactResponseJson());
+            handleAddContactResponse(
+                p_jsonParser->tryGetAddContactResponseJson());
             //TODO: send add contact notification to listener and wait for result
 
             break;
@@ -170,6 +194,12 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
             break;
         }
 
+        case RESPONSE_REGISTER_UPDATE_USER:
+        {
+            handleRegisterUpdateResponse(
+                p_jsonParser->tryGetRegisterUpdateUserJson());
+            break;
+        }
 
         default:
         {
@@ -210,44 +240,23 @@ void ChatClientImpl::handleLoginResponse(const LoginResponseJson& responseJson)
 {
 
     AUTH_STATUS status = responseJson.getAutheticationStatus();
-    switch(status)
+    if (status == AUTH_SUCCESSFUL)
     {
-        case AUTH_SUCCESSFUL:
+        m_state = LOGGED_IN;
+        for (auto listener: m_clientListeners)
         {
-            m_state = LOGGED_IN;
-            for (auto listener: m_clientListeners)
-            {
-                listener->onLoginSuccessful(
-                    responseJson.getUserDetails());
-            }
-            break;
-        }
-
-        case AUTH_INVALID_CREDENTIALS:
-        {
-            m_state = LOG_IN_ERROR;
-            for (auto listener: m_clientListeners)
-            {
-                listener->onLoginFailed("INVALID CREDENTIALS");
-            }
-            LOG_DEBUG_METHOD;
-            break;
-        }
-
-        case AUTH_ALREADY_LOGGED_IN:
-        {
-            m_state = LOG_IN_ERROR;
-            for (IChatClientListener* listener: m_clientListeners)
-            {
-                LOG_DEBUG("Before\n");
-                listener->onLoginFailed("USER ALREADY LOGGED IN");
-                LOG_DEBUG("After\n");
-            }
-            LOG_DEBUG("it fin\n");
-            break;
+            listener->onLoginSuccessful(
+                responseJson.getUserDetails());
         }
     }
-    LOG_DEBUG("meth end\n");
+    else
+    {
+        m_state = LOG_IN_ERROR;
+        for (auto listener: m_clientListeners)
+        {
+            listener->onLoginFailed(status);
+        }
+    }
 }
 
 void ChatClientImpl::handleReceiveContacts(
@@ -279,7 +288,7 @@ void ChatClientImpl::handleContactStateChanged(
     const ContactStateChangedJson& responseJson)
 {
     int contactId = responseJson.getContactId();
-    CONTACT_STATE contactState = responseJson.getContactState();
+    USER_STATE contactState = responseJson.getContactState();
 //    LOG_DEBUG("%d %d\n",userId,jsonObject);
     for (auto listener: m_clientListeners)
     {
@@ -287,14 +296,15 @@ void ChatClientImpl::handleContactStateChanged(
     }
 }
 
-bool ChatClientImpl::handleAddingByContact(const AddingByContactJson& responseJson)
+bool ChatClientImpl::handleAddingByContact(
+    const AddingByContactJson& responseJson)
 {
     bool listenerAccepted = false;
     const std::string& requester = responseJson.getUserName();
     for (IChatClientListener* listener: m_clientListeners)
     {
         listenerAccepted = listener->onAddingByContact(requester);
-		if (listenerAccepted)
+        if (listenerAccepted)
         {
             return true;
         }
@@ -302,17 +312,19 @@ bool ChatClientImpl::handleAddingByContact(const AddingByContactJson& responseJs
     return false;
 }
 
-void ChatClientImpl::handleAddContactResponse(const AddContactResponseJson& responseJson)
+void ChatClientImpl::handleAddContactResponse(
+    const AddContactResponseJson& responseJson)
 {
     const std::string& userName = responseJson.getUserName();
-    bool accepted = responseJson.hasAccepted();
+    ADD_STATUS status = responseJson.getStatus();
     for (IChatClientListener* listener: m_clientListeners)
     {
-        listener->onAddContactResponse(userName,accepted);
+        listener->onAddContactResponse(userName,status);
     }
 }
 
-void ChatClientImpl::handleRemovedByContact(const RemovedByContactJson& responseJson)
+void ChatClientImpl::handleRemovedByContact(
+    const RemovedByContactJson& responseJson)
 {
     int contactId = responseJson.getContactId();
     for (IChatClientListener* listener: m_clientListeners)
@@ -321,3 +333,12 @@ void ChatClientImpl::handleRemovedByContact(const RemovedByContactJson& response
     }
 }
 
+void ChatClientImpl::handleRegisterUpdateResponse(
+    const RegisterUpdateUserResponseJson& responseJson)
+{
+    REGISTER_UPDATE_USER_STATUS status = responseJson.getStatus();
+    for (IChatClientListener* listener: m_clientListeners)
+    {
+        listener->onRegisterUpdateResponse(status);
+    }
+}

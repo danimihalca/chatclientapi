@@ -16,7 +16,7 @@
 #include <JsonChatProtocol/json_response/AddingByContactJson.hpp>
 #include <JsonChatProtocol/json_response/AddContactResponseJson.hpp>
 #include <JsonChatProtocol/json_response/RemovedByContactJson.hpp>
-
+#include <JsonChatProtocol/json_response/RegisterUpdateUserResponseJson.hpp>
 
 class IClientJsonParser
 {
@@ -32,6 +32,8 @@ public:
     virtual AddingByContactJson tryGetAddingByContactJson() = 0;
     virtual AddContactResponseJson tryGetAddContactResponseJson() = 0;
     virtual RemovedByContactJson tryGetRemovedByContactJson() = 0;
+
+    virtual RegisterUpdateUserResponseJson tryGetRegisterUpdateUserJson() = 0;
 
     virtual ~IClientJsonParser()
     {

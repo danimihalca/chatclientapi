@@ -20,7 +20,10 @@ public:
     //Implements IChatClient
 public:
     void connect(const std::string& address, uint16_t port);
-    void login(const UserCredentials& userCredentials);
+    void login(const UserCredentials& userCredentials, USER_STATE state);
+    void changeState(USER_STATE state);
+    void registerUser(const User& user);
+    void updateUser(const User& user);
     void sendMessage(int receiverId, const std::string& message);
     void requestContacts();
     void disconnect();

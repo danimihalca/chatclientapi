@@ -20,8 +20,7 @@ ClientJsonFactory::~ClientJsonFactory()
     delete p_writer;
 }
 
-std::string ClientJsonFactory::createLoginJsonString(
-    const UserCredentials& userCredentials)
+std::string ClientJsonFactory::createLoginJsonString(const UserCredentials& userCredentials, USER_STATE state)
 {
     m_outputStream.str("");
     Json::Value root;
@@ -31,7 +30,7 @@ std::string ClientJsonFactory::createLoginJsonString(
     userCredentialsJson[USERNAME] = userCredentials.getUserName();
     userCredentialsJson[PASSWORD] = userCredentials.getPassword();
     content[USER_CREDENTIALS] = userCredentialsJson;
-
+    content[STATE] = state;
     root[CONTENT] = content;
     p_writer->write(root,&m_outputStream);
 
@@ -106,6 +105,64 @@ std::string ClientJsonFactory::createRemoveContactJsonString(int contactId)
     Json::Value content;
 
     content[ID] = contactId;
+    root[CONTENT] = content;
+    p_writer->write(root,&m_outputStream);
+
+    return m_outputStream.str();
+}
+
+
+std::string ClientJsonFactory::createChangeStateJsonString(USER_STATE state)
+{
+    m_outputStream.str("");
+    Json::Value root;
+    root[REQUEST_ACTION] = REQUEST_CHANGE_STATE;
+    Json::Value content;
+
+    content[STATE] = state;
+    root[CONTENT] = content;
+    p_writer->write(root,&m_outputStream);
+
+    return m_outputStream.str();
+}
+
+
+std::string ClientJsonFactory::createUpdateUserJsonString(const User& user)
+{
+    m_outputStream.str("");
+    Json::Value root;
+    root[REQUEST_ACTION] = REQUEST_UPDATE_USER;
+    Json::Value content;
+    Json::Value userJson;
+
+    userJson[USERNAME] = user.getUserName();
+    userJson[PASSWORD] = user.getPassword();
+    userJson[FIRSTNAME] = user.getFirstName();
+    userJson[LASTNAME] = user.getLastName();
+
+    content[USER] = userJson;
+
+    root[CONTENT] = content;
+    p_writer->write(root,&m_outputStream);
+
+    return m_outputStream.str();
+}
+
+std::string ClientJsonFactory::createRegisterUserJsonString(const User& user)
+{
+    m_outputStream.str("");
+    Json::Value root;
+    root[REQUEST_ACTION] = REQUEST_REGISTER_USER;
+    Json::Value content;
+    Json::Value userJson;
+
+    userJson[USERNAME] = user.getUserName();
+    userJson[PASSWORD] = user.getPassword();
+    userJson[FIRSTNAME] = user.getFirstName();
+    userJson[LASTNAME] = user.getLastName();
+
+    content[USER] = userJson;
+
     root[CONTENT] = content;
     p_writer->write(root,&m_outputStream);
 

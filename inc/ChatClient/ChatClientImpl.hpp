@@ -23,6 +23,8 @@ class IWebsocketClient;
 #include <JsonChatProtocol/json_response/AddContactResponseJson.hpp>
 #include <JsonChatProtocol/json_response/RemovedByContactJson.hpp>
 
+class RegisterUpdateUserResponseJson;
+
 class ChatClientImpl :
     public IChatClient,
     public IWebsocketClientListener
@@ -47,7 +49,10 @@ public:
     // Implements IChatClient interface
 public:
     void connect(const std::string& address, uint16_t port);
-    void login(const UserCredentials& userCredentials);
+    void login(const UserCredentials& userCredentials, USER_STATE state);
+    void changeState(USER_STATE state);
+    void registerUser(const User& user);
+    void updateUser(const User& user);
     void sendMessage(int receiverId, const std::string& message);
     void requestContacts();
     void disconnect();
@@ -73,12 +78,16 @@ private:
     bool handleAddingByContact(const AddingByContactJson& responseJson);
     void handleAddContactResponse(const AddContactResponseJson& responseJson);
     void handleRemovedByContact(const RemovedByContactJson& responseJson);
+
+    void handleRegisterUpdateResponse(const RegisterUpdateUserResponseJson& responseJson);
+
 private:
     Chat_Client_State m_state;
     std::unique_ptr<IWebsocketClient> p_websocketClient;
     std::list<IChatClientListener*> m_clientListeners;
     std::unique_ptr<IClientJsonFactory> p_jsonFactory;
     std::unique_ptr<IClientJsonParser> p_jsonParser;
+
 };
 
 

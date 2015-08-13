@@ -66,8 +66,8 @@ ContactStateChangedJson ClientJsonParser::tryGetContactStateChangedJson()
     Json::Value content = m_root[CONTENT];
 
     int contactId = content[CONTACT][ID].asInt();
-    CONTACT_STATE state =
-        static_cast<CONTACT_STATE>(content[CONTACT][STATE].asInt());
+    USER_STATE state =
+        static_cast<USER_STATE>(content[CONTACT][STATE].asInt());
     ContactStateChangedJson responseJson;
 
     responseJson.setContactId(contactId);
@@ -106,8 +106,8 @@ ReceiveContactsJson ClientJsonParser::tryGetReceiveContactsJson()
                                     contactJson[USERNAME].asString(),
                                     contactJson[FIRSTNAME].asString(),
                                     contactJson[LASTNAME].asString(),
-                                    static_cast<CONTACT_STATE>(contactJson[STATE]
-                                                               .asInt()));
+                                    static_cast<USER_STATE>(contactJson[STATE]
+                                                            .asInt()));
     }
 
 
@@ -134,8 +134,8 @@ AddContactResponseJson ClientJsonParser::tryGetAddContactResponseJson()
     Json::Value content = m_root[CONTENT];
 
     std::string userName = content[USERNAME].asString();
-    bool accepted = content["accepted"].asBool();
-    AddContactResponseJson requestJson(userName, accepted);
+    ADD_STATUS addStatus = static_cast<ADD_STATUS>(content[ADD_REQUEST_STATUS].asInt());
+    AddContactResponseJson requestJson(userName, addStatus);
 
     return requestJson;
 }
@@ -147,6 +147,21 @@ RemovedByContactJson ClientJsonParser::tryGetRemovedByContactJson()
     int contactId = content[ID].asInt();
 
     RemovedByContactJson requestJson(contactId);
+
+    return requestJson;
+}
+
+
+RegisterUpdateUserResponseJson ClientJsonParser::tryGetRegisterUpdateUserJson()
+{
+    Json::Value content = m_root[CONTENT];
+
+    REGISTER_UPDATE_USER_STATUS status =
+        static_cast<REGISTER_UPDATE_USER_STATUS>(content[REGISTER_UPDATE_STATUS]
+                                                 .
+                                                 asInt());
+
+    RegisterUpdateUserResponseJson requestJson(status);
 
     return requestJson;
 }

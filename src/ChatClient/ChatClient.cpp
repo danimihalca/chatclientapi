@@ -17,10 +17,15 @@ void ChatClient::connect(const std::string& address, uint16_t port)
 
 }
 
-void ChatClient::login(const UserCredentials& userCredentials)
+void ChatClient::login(const UserCredentials& userCredentials, USER_STATE state)
 {
-    p_impl->login(userCredentials);
+    p_impl->login(userCredentials,state);
 
+}
+
+void ChatClient::changeState(USER_STATE state)
+{
+    p_impl->changeState(state);
 }
 
 void ChatClient::sendMessage(int receiverId, const std::string& message)
@@ -56,4 +61,15 @@ void ChatClient::addContact(const std::string& userName)
 void ChatClient::removeContact(int contactId)
 {
     p_impl->removeContact(contactId);
+}
+
+
+void ChatClient::registerUser(const User& user)
+{
+    p_impl->registerUser(user);
+}
+
+void ChatClient::updateUser(const User& user)
+{
+    p_impl->updateUser(user);
 }

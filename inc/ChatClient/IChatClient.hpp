@@ -8,14 +8,16 @@
 
 class IChatClientListener;
 
-class UserCredentials;
-
+#include <Model/User.hpp>
 
 class LIBRARY_VISIBILITY IChatClient
 {
 public:
     virtual void connect(const std::string& address, uint16_t port) = 0;
-    virtual void login(const UserCredentials& userCredentials) = 0;
+    virtual void login(const UserCredentials& userCredentials, USER_STATE state) = 0;
+    virtual void changeState(USER_STATE state) = 0;
+    virtual void registerUser(const User& user) = 0;
+    virtual void updateUser(const User& user) = 0;
     virtual void sendMessage(int receiverId, const std::string& message) = 0;
     virtual void requestContacts() = 0;
     virtual void disconnect() = 0;
