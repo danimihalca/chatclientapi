@@ -9,26 +9,21 @@
 class ClientJsonFactory : public IClientJsonFactory
 {
 public:
-    ClientJsonFactory();
-    ~ClientJsonFactory();
+    ClientJsonFactory() = default;
 
     // Implements IClientJsonFactory interface
 public:
-    std::string createLoginJsonString(const UserCredentials& userCredentials, USER_STATE state);
-    std::string createRequestContactsJsonString();
-    std::string createSendMessageJsonString(const Message& message);
-    std::string createAddContactJsonString(const std::string& userName);
-    std::string createAddContactResolutionJsonString(
+    IActionJsonObject* createLoginJson(const UserCredentials& userCredentials, USER_STATE state);
+    IActionJsonObject* createRequestContactsJson();
+    IActionJsonObject* createSendMessageJson(const Message& message);
+   IActionJsonObject* createAddContactJson(const std::string& userName);
+    IActionJsonObject* createAddContactResolutionJson(
         const std::string& userName,
         bool               accepted);
-    std::string createRemoveContactJsonString(int contactId);
-    std::string createChangeStateJsonString(USER_STATE state);
-    std::string createUpdateUserJsonString(const User& user);
-    std::string createRegisterUserJsonString(const User& user);
-
-private:
-    Json::StreamWriter* p_writer;
-    std::stringstream m_outputStream;
+    IActionJsonObject*createRemoveContactJson(int contactId);
+    IActionJsonObject*createChangeStateJson(USER_STATE state);
+   IActionJsonObject* createUpdateUserJson(const User& user);
+   IActionJsonObject*createRegisterUserJson(const User& user);
 
 };
 

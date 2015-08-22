@@ -10,27 +10,27 @@ int websocket_callback(libwebsocket_context*         context,
                        void*                         in,
                        size_t /*len*/)
 {
-    struct session_data* pss = (struct session_data*)user;
-    IWebsocketCallbackListener* listener =
-        (IWebsocketCallbackListener*) libwebsocket_context_user(context);
+//    struct session_data* pss = (struct session_data*)user;
+    user_data* ud = (user_data*) libwebsocket_context_user(context);
+
 
     switch(reason)
     {
 
         case LWS_CALLBACK_CLIENT_ESTABLISHED:
         {
-            if (listener != nullptr)
+            if (ud->listener != nullptr)
             {
-                listener->onConnected();
+                ud->listener->onConnected();
             }
             break;
         }
 
         case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
         {
-            if (listener != nullptr)
+            if (ud->listener != nullptr)
             {
-                listener->onConnectionError();
+                ud->listener->onConnectionError();
             }
             return -1;
 
@@ -39,9 +39,9 @@ int websocket_callback(libwebsocket_context*         context,
 
         case LWS_CALLBACK_CLOSED:
         {
-            if (listener != nullptr)
+            if (ud->listener != nullptr)
             {
-                listener->onDisconnected();
+                ud->listener->onDisconnected();
             }
             return -1;
 
@@ -50,9 +50,9 @@ int websocket_callback(libwebsocket_context*         context,
 
         case LWS_CALLBACK_CLIENT_RECEIVE:
         {
-            if(listener != nullptr)
+            if(ud->listener != nullptr)
             {
-                listener->onMessageReceived((char*)in);
+                ud->listener->onTextReceived((char*)in);
             }
             LOG_DEBUG_METHOD;
             break;
@@ -60,22 +60,31 @@ int websocket_callback(libwebsocket_context*         context,
 
 
         case LWS_CALLBACK_CLIENT_WRITEABLE:
-
         {
-            int n = libwebsocket_write(wsi,
-                                       &pss->buf[LWS_SEND_BUFFER_PRE_PADDING],
-                                       pss->len,
+            std::lock_guard<std::mutex> lock(*ud->mutex);
+            std::string& text = ud->messageQueue->front();
+            size_t length = text.length() - LWS_SEND_BUFFER_POST_PADDING -LWS_SEND_BUFFER_PRE_PADDING;
+            libwebsocket_write(wsi,
+                                       (unsigned char*)&(text.c_str()[LWS_SEND_BUFFER_PRE_PADDING]),
+                                       length,
                                        LWS_WRITE_TEXT);
-            if(n < 0)
-            {
-                lwsl_err("ERROR %d writing to socket, hanging up\n", n);
-                return -1;
-            }
-            if(n < (int)pss->len)
-            {
-                lwsl_err("Partial write\n");
-                return -1;
-            }
+            ud->messageQueue->pop();
+//            int n = libwebsocket_write(wsi,
+//                                       &pss->buf[LWS_SEND_BUFFER_PRE_PADDING],
+//                                       pss->len,
+//                                       LWS_WRITE_TEXT);
+
+
+//            if(n < 0)
+//            {
+//                lwsl_err("ERROR %d writing to socket, hanging up\n", n);
+//                return -1;
+//            }
+//            if(n < (int)pss->len)
+//            {
+//                lwsl_err("Partial write\n");
+//                return -1;
+//            }
             break;
         }
 

@@ -12,7 +12,6 @@ class IChatClientListener
 {
 public:
     virtual void onMessageReceived(const Message& message) = 0;
-    virtual void onConnected() = 0;
     virtual void onLoginSuccessful(const UserDetails& userDetails) = 0;
     virtual void onLoginFailed(AUTH_STATUS reason) = 0;
     virtual void onConnectionError() = 0;

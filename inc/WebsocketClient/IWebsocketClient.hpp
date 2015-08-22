@@ -11,9 +11,10 @@ class IWebsocketClient
 {
 public:
     virtual void initialize() = 0;
-    virtual void connect(const std::string& address, uint16_t port) = 0;
+    virtual void setServer(const std::string& address, uint16_t port) = 0;
+    virtual void connect() = 0;
     virtual void startService() = 0;
-    virtual void sendMessage(const std::string& message) = 0;
+    virtual void sendText(const std::string& text) = 0;
     virtual void closeConnection() = 0;
 
     virtual void addListener(IWebsocketClientListener* listener) = 0;

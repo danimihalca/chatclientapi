@@ -4,32 +4,34 @@
 #include <string>
 
 #include <Model/User.hpp>
+
+class IActionJsonObject;
 class Message;
 
 class IClientJsonFactory
 {
 public:
-    virtual std::string createLoginJsonString(
+    virtual IActionJsonObject* createLoginJson(
         const UserCredentials& userCredentials,  USER_STATE state) = 0;
-    virtual std::string createRequestContactsJsonString() = 0;
-    virtual std::string createSendMessageJsonString(const Message& message) =
+    virtual IActionJsonObject* createRequestContactsJson() = 0;
+    virtual IActionJsonObject* createSendMessageJson(const Message& message) =
         0;
 
-    virtual std::string createAddContactJsonString(const std::string& userName)
+    virtual IActionJsonObject* createAddContactJson(const std::string& userName)
         =
             0;
 
-    virtual std::string createAddContactResolutionJsonString(
+    virtual IActionJsonObject* createAddContactResolutionJson(
         const std::string& userName,
         bool               accepted) = 0;
 
 
-    virtual std::string createRemoveContactJsonString(int contactId) = 0;
+    virtual IActionJsonObject* createRemoveContactJson(int contactId) = 0;
 
-    virtual std::string createChangeStateJsonString(USER_STATE state) = 0;
+    virtual IActionJsonObject* createChangeStateJson(USER_STATE state) = 0;
 
-    virtual std::string createUpdateUserJsonString(const User& user) = 0;
-    virtual std::string createRegisterUserJsonString(const User& user) = 0;
+    virtual IActionJsonObject* createUpdateUserJson(const User& user) = 0;
+    virtual IActionJsonObject* createRegisterUserJson(const User& user) = 0;
 
     virtual ~IClientJsonFactory()
     {

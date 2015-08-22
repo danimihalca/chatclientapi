@@ -22,7 +22,7 @@ class IClientJsonParser
 {
 public:
     virtual bool trySetJsonString(const std::string& json) = 0;
-    virtual RESPONSE_ACTION_TYPE getActionType() = 0;
+    virtual NOTIFICATION_TYPE getActionType() = 0;
 
     virtual LoginResponseJson tryGetLoginResponseJson() = 0;
     virtual ContactStateChangedJson tryGetContactStateChangedJson() = 0;

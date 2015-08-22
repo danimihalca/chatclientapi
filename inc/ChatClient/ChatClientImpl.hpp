@@ -4,8 +4,6 @@
 #include <memory>
 #include <list>
 
-#include <Model/User.hpp>
-
 #include "ChatClient/IChatClient.hpp"
 #include "WebsocketClient/IWebsocketClientListener.hpp"
 
@@ -14,14 +12,13 @@ class IClientJsonFactory;
 class IClientJsonParser;
 class IWebsocketClient;
 
-#include <JsonChatProtocol/json_response/LoginResponseJson.hpp>
-#include <JsonChatProtocol/json_response/ContactStateChangedJson.hpp>
-#include <JsonChatProtocol/json_response/ReceiveMessageJson.hpp>
-#include <JsonChatProtocol/json_response/ReceiveContactsJson.hpp>
-
-#include <JsonChatProtocol/json_response/AddingByContactJson.hpp>
-#include <JsonChatProtocol/json_response/AddContactResponseJson.hpp>
-#include <JsonChatProtocol/json_response/RemovedByContactJson.hpp>
+class LoginResponseJson;
+class ContactStateChangedJson;
+class ReceiveMessageJson;
+class ReceiveContactsJson;
+class AddingByContactJson;
+class AddContactResponseJson;
+class RemovedByContactJson;
 
 class RegisterUpdateUserResponseJson;
 
@@ -32,14 +29,14 @@ class ChatClientImpl :
     enum Chat_Client_State
     {
         INITIAL,
-        CONNECTING,
         CONNECTED,
-        CONNECT_ERROR,
+        CONNECTION_ERROR,
         DISCONNECTED,
 
         LOGGING_IN,
         LOGGED_IN,
-        LOG_IN_ERROR
+        LOG_IN_ERROR,
+        REGISTERING
     };
 
 public:
@@ -48,11 +45,11 @@ public:
 
     // Implements IChatClient interface
 public:
-    void connect(const std::string& address, uint16_t port);
-    void login(const UserCredentials& userCredentials, USER_STATE state);
-    void changeState(USER_STATE state);
-    void registerUser(const User& user);
-    void updateUser(const User& user);
+    virtual void setServer(const std::string& address, uint16_t port);
+    virtual void login(const UserCredentials& userCredentials, USER_STATE state);
+    virtual void changeState(USER_STATE state);
+    virtual void registerUser(const User& user);
+    virtual void updateUser(const User& user);
     void sendMessage(int receiverId, const std::string& message);
     void requestContacts();
     void disconnect();
@@ -64,12 +61,15 @@ public:
 
     // Implements IWebsocketClientListener interface
 public:
-    void onMessageReceived(const std::string& message);
-    void onConnected();
+    void onTextReceived(const std::string& message);
+   virtual void onConnected();
     void onDisconnected();
-    void onConnectionError();
+    virtual void onConnectionError();
 
 private:
+    void performLogin();
+    void performRegister();
+
     void handleLoginResponse(const LoginResponseJson& loginResponseJson);
     void handleReceiveContacts(const ReceiveContactsJson& responseJson);
     void handleReceiveMessage(const ReceiveMessageJson& responseJson);
@@ -88,6 +88,9 @@ private:
     std::unique_ptr<IClientJsonFactory> p_jsonFactory;
     std::unique_ptr<IClientJsonParser> p_jsonParser;
 
+    UserCredentials* p_userCredentials;
+    USER_STATE* p_state;
+    User* p_user;
 };
 
 

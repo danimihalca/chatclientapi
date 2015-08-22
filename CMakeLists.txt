@@ -33,7 +33,9 @@ SET (HEADER_FILES inc/chat_client_common.hpp
                   inc/JsonProtocol/IClientJsonFactory.hpp
                   inc/JsonProtocol/IClientJsonParser.hpp
                   inc/JsonProtocol/ClientJsonParser.hpp
-                  inc/JsonProtocol/ClientJsonFactory.hpp)
+                  inc/JsonProtocol/ClientJsonFactory.hpp
+                  inc/JsonProtocol/ActionJsonObject/IActionJsonObject.hpp
+                  inc/JsonProtocol/ActionJsonObject/ActionJsonObject.hpp)
 SET (SOURCE_FILES src/ChatClient/ChatClient.cpp
                   src/ChatClient/ChatClientImpl.cpp
                   src/WebsocketClient/WebsocketClient.cpp

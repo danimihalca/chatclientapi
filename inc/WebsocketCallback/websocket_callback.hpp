@@ -2,8 +2,11 @@
 #define WEBSOCKET_CLIENT_CALLBACK_HPP
 
 #include <libwebsockets.h>
-
+#include <mutex>
+#include <queue>
 #include "chat_client_common.hpp"
+
+class IWebsocketCallbackListener;
 
 const int MAX_PAYLOAD = 1400;
 
@@ -12,6 +15,13 @@ struct session_data
     unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + MAX_PAYLOAD +
                       LWS_SEND_BUFFER_POST_PADDING];
     unsigned int len;
+};
+
+struct user_data
+{
+    IWebsocketCallbackListener* listener;
+    std::mutex* mutex;
+    std::queue<std::string>* messageQueue;
 };
 
 LIBRARY_VISIBILITY int websocket_callback(

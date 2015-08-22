@@ -33,9 +33,9 @@ bool ClientJsonParser::trySetJsonString(const std::string& json)
                            nullptr);
 }
 
-RESPONSE_ACTION_TYPE ClientJsonParser::getActionType()
+NOTIFICATION_TYPE ClientJsonParser::getActionType()
 {
-    return static_cast<RESPONSE_ACTION_TYPE>(m_root[RESPONSE_ACTION].asInt());
+    return static_cast<NOTIFICATION_TYPE>(m_root[NOTIFICATION].asInt());
 }
 
 

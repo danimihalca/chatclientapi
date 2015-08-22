@@ -4,27 +4,13 @@
 #include <Model/User.hpp>
 #include <Model/Message.hpp>
 
-ClientJsonFactory::ClientJsonFactory()
-{
-    Json::StreamWriterBuilder builder;
-    builder["commentStyle"] = "None";
-    builder["indentation"] = "";
-    builder["enableYAMLCompatibility"] = false;
-    builder["dropNullPlaceholders"] = true;
+#include <JsonProtocol/ActionJsonObject/ActionJsonObject.hpp>
 
-    p_writer = builder.newStreamWriter();
-}
 
-ClientJsonFactory::~ClientJsonFactory()
+IActionJsonObject* ClientJsonFactory::createLoginJson(const UserCredentials& userCredentials, USER_STATE state)
 {
-    delete p_writer;
-}
-
-std::string ClientJsonFactory::createLoginJsonString(const UserCredentials& userCredentials, USER_STATE state)
-{
-    m_outputStream.str("");
     Json::Value root;
-    root[REQUEST_ACTION] = REQUEST_LOGIN;
+    root[ACTION] = ACTION_LOGIN;
     Json::Value content;
     Json::Value userCredentialsJson;
     userCredentialsJson[USERNAME] = userCredentials.getUserName();
@@ -32,28 +18,24 @@ std::string ClientJsonFactory::createLoginJsonString(const UserCredentials& user
     content[USER_CREDENTIALS] = userCredentialsJson;
     content[STATE] = state;
     root[CONTENT] = content;
-    p_writer->write(root,&m_outputStream);
 
-    return m_outputStream.str();
+    return new ActionJsonObject(root);
 }
 
 
-std::string ClientJsonFactory::createRequestContactsJsonString()
+IActionJsonObject* ClientJsonFactory::createRequestContactsJson()
 {
-    m_outputStream.str("");
     Json::Value root;
-    root[REQUEST_ACTION] = REQUEST_GET_CONTACTS;
-    p_writer->write(root,&m_outputStream);
+    root[ACTION] = ACTION_GET_CONTACTS;
+    return new ActionJsonObject(root);
 
-    return m_outputStream.str();
 }
 
-std::string ClientJsonFactory::createSendMessageJsonString(
+IActionJsonObject* ClientJsonFactory::createSendMessageJson(
     const Message& message)
 {
-    m_outputStream.str("");
     Json::Value root;
-    root[REQUEST_ACTION] = REQUEST_SEND_MESSAGE;
+    root[ACTION] = ACTION_SEND_MESSAGE;
     Json::Value content;
 
     Json::Value messageJson;
@@ -63,75 +45,65 @@ std::string ClientJsonFactory::createSendMessageJsonString(
 
     content[MESSAGE] = messageJson;
     root[CONTENT] = content;
-    p_writer->write(root,&m_outputStream);
+    return new ActionJsonObject(root);
 
-    return m_outputStream.str();
 }
 
-std::string ClientJsonFactory::createAddContactJsonString(const std::string& userName)
+IActionJsonObject* ClientJsonFactory::createAddContactJson(const std::string& userName)
 {
-    m_outputStream.str("");
     Json::Value root;
-    root[REQUEST_ACTION] = REQUEST_ADD_CONTACT;
+    root[ACTION] = ACTION_ADD_CONTACT;
     Json::Value content;
 
     content[USERNAME] = userName;
     root[CONTENT] = content;
-    p_writer->write(root,&m_outputStream);
+    return new ActionJsonObject(root);
 
-    return m_outputStream.str();
 }
 
-std::string ClientJsonFactory::createAddContactResolutionJsonString(const std::string& userName, bool accepted)
+IActionJsonObject* ClientJsonFactory::createAddContactResolutionJson(const std::string& userName, bool accepted)
 {
-    m_outputStream.str("");
     Json::Value root;
-    root[REQUEST_ACTION] = REQUEST_ADD_CONTACT_RESOLUTION;
+    root[ACTION] = ACTION_ADD_CONTACT_RESOLUTION;
     Json::Value content;
 
     content[USERNAME] = userName;
     content[ACCEPTED] = accepted;
     root[CONTENT] = content;
-    p_writer->write(root,&m_outputStream);
+    return new ActionJsonObject(root);
 
-    return m_outputStream.str();
 }
 
-std::string ClientJsonFactory::createRemoveContactJsonString(int contactId)
+IActionJsonObject* ClientJsonFactory::createRemoveContactJson(int contactId)
 {
-    m_outputStream.str("");
     Json::Value root;
-    root[REQUEST_ACTION] = REQUEST_REMOVE_CONTACT;
+    root[ACTION] = ACTION_REMOVE_CONTACT;
     Json::Value content;
 
     content[ID] = contactId;
     root[CONTENT] = content;
-    p_writer->write(root,&m_outputStream);
+    return new ActionJsonObject(root);
 
-    return m_outputStream.str();
 }
 
 
-std::string ClientJsonFactory::createChangeStateJsonString(USER_STATE state)
+IActionJsonObject* ClientJsonFactory::createChangeStateJson(USER_STATE state)
 {
-    m_outputStream.str("");
     Json::Value root;
-    root[REQUEST_ACTION] = REQUEST_CHANGE_STATE;
+    root[ACTION] = ACTION_CHANGE_STATE;
     Json::Value content;
 
     content[STATE] = state;
     root[CONTENT] = content;
-    p_writer->write(root,&m_outputStream);
+    return new ActionJsonObject(root);
 
-    return m_outputStream.str();
 }
 
 
-std::string ClientJsonFactory::createUpdateUserJsonString(const User& user)
+IActionJsonObject* ClientJsonFactory::createUpdateUserJson(const User& user)
 {
-    m_outputStream.str("");
     Json::Value root;
-    root[REQUEST_ACTION] = REQUEST_UPDATE_USER;
+    root[ACTION] = ACTION_UPDATE_USER;
     Json::Value content;
     Json::Value userJson;
 
@@ -143,16 +115,14 @@ std::string ClientJsonFactory::createUpdateUserJsonString(const User& user)
     content[USER] = userJson;
 
     root[CONTENT] = content;
-    p_writer->write(root,&m_outputStream);
+    return new ActionJsonObject(root);
 
-    return m_outputStream.str();
 }
 
-std::string ClientJsonFactory::createRegisterUserJsonString(const User& user)
+IActionJsonObject* ClientJsonFactory::createRegisterUserJson(const User& user)
 {
-    m_outputStream.str("");
     Json::Value root;
-    root[REQUEST_ACTION] = REQUEST_REGISTER_USER;
+    root[ACTION] = ACTION_REGISTER_USER;
     Json::Value content;
     Json::Value userJson;
 
@@ -164,7 +134,6 @@ std::string ClientJsonFactory::createRegisterUserJsonString(const User& user)
     content[USER] = userJson;
 
     root[CONTENT] = content;
-    p_writer->write(root,&m_outputStream);
+    return new ActionJsonObject(root);
 
-    return m_outputStream.str();
 }

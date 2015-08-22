@@ -15,6 +15,8 @@
 
 #include <Model/Message.hpp>
 
+#include <JsonProtocol/ActionJsonObject/IActionJsonObject.hpp>
+
 ChatClientImpl::ChatClientImpl() :
     m_state(INITIAL),
     p_websocketClient(new WebsocketClient()),
@@ -30,71 +32,73 @@ ChatClientImpl::~ChatClientImpl()
     p_websocketClient.reset();
 }
 
-void ChatClientImpl::connect(const std::string& address,
+void ChatClientImpl::setServer(const std::string& address,
                              uint16_t           port)
 {
-    p_websocketClient->connect(address, port);
+    p_websocketClient->setServer(address, port);
 }
 
 void ChatClientImpl::login(const UserCredentials& userCredentials,
                            USER_STATE             state)
 {
-
+    p_state = new USER_STATE(state);
+    p_userCredentials = new UserCredentials(userCredentials);
     if (m_state == CONNECTED ||
         m_state == LOG_IN_ERROR)
     {
-        std::string loginJSON = p_jsonFactory->createLoginJsonString(
-            userCredentials,state);
-        p_websocketClient->sendMessage(loginJSON);
-
+        performLogin();
+    }
+    else if (m_state == INITIAL ||
+             m_state == DISCONNECTED ||
+             m_state == CONNECTION_ERROR)
+    {
+        p_websocketClient->connect();
         m_state = LOGGING_IN;
     }
 
-    // else handle login after connecting to the server
-//    if (m_state == INITIAL ||
-//        m_state == DISCONNECTED ||
-//        m_state == CONNECT_ERROR)
-//    {
-//        m_state = CONNECTING;
-
-//        if (!p_websocketClient->connect())
-//        {
-//            m_state = CONNECT_ERROR;
-//        }
-//    }
 }
 
 void ChatClientImpl::sendMessage(int receiverId, const std::string& message)
 {
     Message m(message,receiverId);
-    std::string sendMessageJson = p_jsonFactory->createSendMessageJsonString(m);
-    p_websocketClient->sendMessage(sendMessageJson);
+    IActionJsonObject* json = p_jsonFactory->createSendMessageJson(m);
+    p_websocketClient->sendText(json->toString());
 }
 
 void ChatClientImpl::changeState(USER_STATE state)
 {
-    std::string requestJson = p_jsonFactory->createChangeStateJsonString(state);
-    p_websocketClient->sendMessage(requestJson);
+   IActionJsonObject* json  = p_jsonFactory->createChangeStateJson(state);
+    p_websocketClient->sendText(json->toString());
 }
 
 void ChatClientImpl::requestContacts()
 {
-    std::string requestJson = p_jsonFactory->createRequestContactsJsonString();
+    IActionJsonObject* json = p_jsonFactory->createRequestContactsJson();
 
-    p_websocketClient->sendMessage(requestJson);
+    p_websocketClient->sendText(json->toString());
 }
 
 void ChatClientImpl::updateUser(const User& user)
 {
-    std::string requestString = p_jsonFactory->createUpdateUserJsonString(user);
-    p_websocketClient->sendMessage(requestString);
+   IActionJsonObject* json  = p_jsonFactory->createUpdateUserJson(user);
+    p_websocketClient->sendText(json->toString());
 }
 
 void ChatClientImpl::registerUser(const User& user)
 {
-    std::string requestString =
-        p_jsonFactory->createRegisterUserJsonString(user);
-    p_websocketClient->sendMessage(requestString);
+    p_user = new User(user);
+    if (m_state == CONNECTED ||
+        m_state == LOG_IN_ERROR)
+    {
+        performRegister();
+    }
+    else if (m_state == INITIAL ||
+             m_state == DISCONNECTED ||
+             m_state == CONNECTION_ERROR)
+    {
+        p_websocketClient->connect();
+        m_state = REGISTERING;
+    }
 }
 
 void ChatClientImpl::addListener(IChatClientListener* listener)
@@ -114,30 +118,30 @@ void ChatClientImpl::disconnect()
 
 void ChatClientImpl::addContact(const std::string& userName)
 {
-    std::string requestJson =
-        p_jsonFactory->createAddContactJsonString(userName);
+   IActionJsonObject* json =
+        p_jsonFactory->createAddContactJson(userName);
 
-    p_websocketClient->sendMessage(requestJson);
+    p_websocketClient->sendText(json->toString());
 
 }
 
 void ChatClientImpl::removeContact(int contactId)
 {
-    std::string requestJson = p_jsonFactory->createRemoveContactJsonString(
+   IActionJsonObject* json  = p_jsonFactory->createRemoveContactJson(
         contactId);
 
-    p_websocketClient->sendMessage(requestJson);
+    p_websocketClient->sendText(json->toString());
 
 }
 
-void ChatClientImpl::onMessageReceived(const std::string& message)
+void ChatClientImpl::onTextReceived(const std::string& message)
 {
     p_jsonParser->trySetJsonString(message);
-    RESPONSE_ACTION_TYPE action = p_jsonParser->getActionType();
+    NOTIFICATION_TYPE action = p_jsonParser->getActionType();
     switch (action)
     {
 
-        case RESPONSE_LOGIN:
+        case NOTIFICATION_LOGIN:
         {
             //            a = p_jsonParser->tryGetLoginResponseJson();
             handleLoginResponse(p_jsonParser->tryGetLoginResponseJson());
@@ -145,41 +149,41 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
             break;
         }
 
-        case RESPONSE_GET_CONTACTS:
+        case NOTIFICATION_GET_CONTACTS:
         {
             handleReceiveContacts(p_jsonParser->tryGetReceiveContactsJson());
             break;
         }
 
-        case RESPONSE_SEND_MESSAGE:
+        case NOTIFICATION_SEND_MESSAGE:
         {
             handleReceiveMessage(p_jsonParser->tryGetReceiveMessageJson());
             break;
         }
 
-        case RESPONSE_CONTACT_STATE_CHANGED:
+        case NOTIFICATION_CONTACT_STATE_CHANGED:
         {
             handleContactStateChanged(
                 p_jsonParser->tryGetContactStateChangedJson());
             break;
         }
 
-        case RESPONSE_ADD_CONTACT:
+        case NOTIFICATION_ADD_CONTACT:
         {
 
             const AddingByContactJson& responseJson =
                 p_jsonParser->tryGetAddingByContactJson();
             bool accept = handleAddingByContact(responseJson);
 
-            std::string requestJson =
-                p_jsonFactory->createAddContactResolutionJsonString(
+           IActionJsonObject* json  =
+                p_jsonFactory->createAddContactResolutionJson(
                     (responseJson.getUserName()), accept);
 
-            p_websocketClient->sendMessage(requestJson);
+            p_websocketClient->sendText(json->toString());
             break;
         }
 
-        case RESPONSE_ADD_CONTACT_RESOLUTION:
+        case NOTIFICATION_ADD_CONTACT_RESOLUTION:
         {
             handleAddContactResponse(
                 p_jsonParser->tryGetAddContactResponseJson());
@@ -188,13 +192,13 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
             break;
         }
 
-        case RESPONSE_REMOVE_CONTACT:
+        case NOTIFICATION_REMOVE_CONTACT:
         {
             handleRemovedByContact(p_jsonParser->tryGetRemovedByContactJson());
             break;
         }
 
-        case RESPONSE_REGISTER_UPDATE_USER:
+        case NOTIFICATION_REGISTER_UPDATE_USER:
         {
             handleRegisterUpdateResponse(
                 p_jsonParser->tryGetRegisterUpdateUserJson());
@@ -211,11 +215,15 @@ void ChatClientImpl::onMessageReceived(const std::string& message)
 
 void ChatClientImpl::onConnected()
 {
-    m_state = CONNECTED;
-    for (auto listener: m_clientListeners)
+    if (m_state == LOGGING_IN)
     {
-        listener->onConnected();
+        performLogin();
     }
+    if (m_state == REGISTERING)
+    {
+        performRegister();
+    }
+    m_state = CONNECTED;
 }
 
 void ChatClientImpl::onDisconnected()
@@ -229,11 +237,28 @@ void ChatClientImpl::onDisconnected()
 
 void ChatClientImpl::onConnectionError()
 {
-    m_state = CONNECT_ERROR;
+    m_state = CONNECTION_ERROR;
     for (auto listener: m_clientListeners)
     {
         listener->onConnectionError();
     }
+}
+
+void ChatClientImpl::performLogin()
+{
+    IActionJsonObject* json = p_jsonFactory->createLoginJson(
+        *p_userCredentials,*p_state);
+    p_websocketClient->sendText(json->toString());
+    delete p_userCredentials;
+    delete p_state;
+}
+
+void ChatClientImpl::performRegister()
+{
+    IActionJsonObject* json  =
+        p_jsonFactory->createRegisterUserJson(*p_user);
+    p_websocketClient->sendText(json->toString());
+    delete p_user;
 }
 
 void ChatClientImpl::handleLoginResponse(const LoginResponseJson& responseJson)

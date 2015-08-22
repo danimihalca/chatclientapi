@@ -18,7 +18,7 @@ public:
     // Implements IJsonParser interface
 public:
     bool trySetJsonString(const std::string& json);
-    RESPONSE_ACTION_TYPE getActionType();
+    NOTIFICATION_TYPE getActionType();
 
     LoginResponseJson tryGetLoginResponseJson();
     ContactStateChangedJson tryGetContactStateChangedJson();

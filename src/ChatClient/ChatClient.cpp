@@ -11,9 +11,10 @@ ChatClient::~ChatClient()
     p_impl.release();
 }
 
-void ChatClient::connect(const std::string& address, uint16_t port)
+void ChatClient::setServer(const std::string& address, uint16_t port)
 {
-    p_impl->connect(address, port);
+//    TODO: SET MEMBERS
+    p_impl->setServer(address, port);
 
 }
 
