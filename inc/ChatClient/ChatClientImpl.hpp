@@ -22,9 +22,7 @@ class RemovedByContactJson;
 
 class RegisterUpdateUserResponseJson;
 
-class ChatClientImpl :
-    public IChatClient,
-    public IWebsocketClientListener
+class ChatClientImpl : public IChatClient, public IWebsocketClientListener
 {
     enum Chat_Client_State
     {

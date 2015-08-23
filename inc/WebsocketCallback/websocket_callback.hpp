@@ -10,13 +10,6 @@ class IWebsocketCallbackListener;
 
 const int MAX_PAYLOAD = 1400;
 
-struct session_data
-{
-    unsigned char buf[LWS_SEND_BUFFER_PRE_PADDING + MAX_PAYLOAD +
-                      LWS_SEND_BUFFER_POST_PADDING];
-    unsigned int len;
-};
-
 struct user_data
 {
     IWebsocketCallbackListener* listener;
@@ -24,7 +17,7 @@ struct user_data
     std::queue<std::string>* messageQueue;
 };
 
-LIBRARY_VISIBILITY int websocket_callback(
+/*LIBRARY_VISIBILITY*/ int websocket_callback(
     struct libwebsocket_context*       context,
     struct libwebsocket*               wsi,
     enum libwebsocket_callback_reasons reason,
@@ -36,7 +29,7 @@ const struct libwebsocket_protocols default_protocol =
 {
     "default",
     websocket_callback,
-    sizeof(struct session_data),
+    0,
     MAX_PAYLOAD
 };
 

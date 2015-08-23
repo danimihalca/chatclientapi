@@ -10,7 +10,7 @@ class IChatClientListener;
 
 #include <Model/User.hpp>
 
-class LIBRARY_VISIBILITY IChatClient
+class CHATCLIENT_API IChatClient
 {
 public:
     virtual void setServer(const std::string& address, uint16_t port) = 0;

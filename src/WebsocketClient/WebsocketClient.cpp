@@ -55,10 +55,8 @@ void WebsocketClient::connect()
         initialize();
     }
 //    b_notifiedConnectionError = false;
-    memset(m_sessionData.buf,0,sizeof(m_sessionData.buf));
-    m_sessionData.len = 0;
     int use_ssl = 0;
-    struct libwebsocket* wsi = libwebsocket_client_connect_extended(p_context,
+    struct libwebsocket* wsi = libwebsocket_client_connect(p_context,
                                                                     m_serverAddress.c_str(),
                                                                     m_ServerPort,
                                                                     use_ssl,
@@ -66,8 +64,7 @@ void WebsocketClient::connect()
                                                                     m_serverAddress.c_str(),
                                                                     "origin",
                                                                     NULL,
-                                                                    -1,
-                                                                    &m_sessionData);
+                                                                    -1);
 
     if(!wsi)
     {

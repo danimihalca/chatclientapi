@@ -49,7 +49,7 @@ private:
     //libwebsockets specific objects
     struct libwebsocket_context* p_context;
     struct libwebsocket_protocols m_protocols[2];
-    struct session_data m_sessionData;
+//    struct session_data m_sessionData;
     struct lws_context_creation_info m_info;
 
     struct user_data m_userData;

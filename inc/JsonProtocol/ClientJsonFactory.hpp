@@ -9,7 +9,7 @@
 class ClientJsonFactory : public IClientJsonFactory
 {
 public:
-    ClientJsonFactory() = default;
+//    ClientJsonFactory() /*= default*/;
 
     // Implements IClientJsonFactory interface
 public:

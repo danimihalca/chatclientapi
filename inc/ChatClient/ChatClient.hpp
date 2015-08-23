@@ -9,8 +9,7 @@
 class IChatClientListener;
 class ChatClientImpl;
 
-class LIBRARY_VISIBILITY ChatClient :
-    public IChatClient
+class CHATCLIENT_API ChatClient : public IChatClient
 {
 
 public:
@@ -35,6 +34,9 @@ public:
 
 private:
     //opaque pointer to actual implementation to reduce compile-time dependencies
+#ifdef _WIN32
+	#pragma warning(disable: 4251)
+#endif
     std::unique_ptr<ChatClientImpl> p_impl;
 
 };
