@@ -118,7 +118,7 @@ ReceiveContactsNotification JsonNotificationParser::tryGetReceiveContactsNotific
 
 }
 
-AddRequestNotification JsonNotificationParser::tryGetAddingByContactNotification()
+AddRequestNotification JsonNotificationParser::tryGetAddRequestNotification()
 {
     Json::Value content = m_root[CONTENT];
 

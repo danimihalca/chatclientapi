@@ -4,35 +4,38 @@
 #include "IActionObject.hpp"
 #include <memory>
 
+#include <json/json.h>
+
 class JsonActionObject: public IActionObject
 {
 public:
     JsonActionObject(Json::Value root):
         m_root(root)
     {
-        if (s_writer.get() == nullptr)
-        {
-            createWriter();
-        }
+
     }
 
     std::string toString()
     {
         std::stringstream ss;
-        s_writer->write(m_root,&ss);
+        getWriterInstance()->write(m_root,&ss);
         return ss.str();
     }
 
-private:
-    void createWriter()
+protected:
+    static Json::StreamWriter* getWriterInstance()
     {
-        Json::StreamWriterBuilder builder;
-        builder["commentStyle"] = "None";
-        builder["indentation"] = "";
-        builder["enableYAMLCompatibility"] = false;
-        builder["dropNullPlaceholders"] = true;
+        if (s_writer.get() == nullptr)
+        {
+            Json::StreamWriterBuilder builder;
+            builder["commentStyle"] = "None";
+            builder["indentation"] = "";
+            builder["enableYAMLCompatibility"] = false;
+            builder["dropNullPlaceholders"] = true;
 
-        s_writer.reset(builder.newStreamWriter());
+            s_writer.reset(builder.newStreamWriter());
+        }
+        return s_writer.get();
     }
 
 private:

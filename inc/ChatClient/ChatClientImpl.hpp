@@ -73,7 +73,7 @@ private:
     void handleReceiveMessage(const ReceiveMessageNotification& responseNotification);
     void handleContactStateChanged(const ContactStateChangedNotification& responseNotification);
 
-    bool handleAddingByContact(const AddRequestNotification& responseNotification);
+    bool handleAddRequest(const AddRequestNotification& responseNotification);
     void handleAddContactResponse(const AddContactResponseNotification& responseNotification);
     void handleRemovedByContact(const RemovedByContactNotification& responseNotification);
 

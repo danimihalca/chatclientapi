@@ -29,7 +29,7 @@ public:
     virtual ReceiveMessageNotification tryGetReceiveMessageNotification() = 0;
     virtual ReceiveContactsNotification tryGetReceiveContactsNotification() = 0;
 
-    virtual AddRequestNotification tryGetAddingByContactNotification() = 0;
+    virtual AddRequestNotification tryGetAddRequestNotification() = 0;
     virtual AddContactResponseNotification tryGetAddContactResponseNotification() = 0;
     virtual RemovedByContactNotification tryGetRemovedByContactNotification() = 0;
 

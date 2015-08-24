@@ -1,7 +1,7 @@
 #ifndef IACTIONJSONOBJECT_HPP
 #define IACTIONJSONOBJECT_HPP
 
-#include <json/json.h>
+#include <string>
 
 class IActionObject
 {

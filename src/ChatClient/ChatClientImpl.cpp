@@ -168,12 +168,12 @@ void ChatClientImpl::onTextReceived(const std::string& message)
             break;
         }
 
-        case NOTIFICATION_ADD_CONTACT:
+        case NOTIFICATION_ADD_REQUEST:
         {
 
             const AddRequestNotification& notification =
-                p_notificationParser->tryGetAddingByContactNotification();
-            bool accept = handleAddingByContact(notification);
+                p_notificationParser->tryGetAddRequestNotification();
+            bool accept = handleAddRequest(notification);
 
            IActionObject* action  =
                 p_actionFactory->createAddContactResolutionAction(
@@ -183,7 +183,7 @@ void ChatClientImpl::onTextReceived(const std::string& message)
             break;
         }
 
-        case NOTIFICATION_ADD_CONTACT_RESOLUTION:
+        case NOTIFICATION_ADD_CONTACT_RESPONSE:
         {
             handleAddContactResponse(
                 p_notificationParser->tryGetAddContactResponseNotification());
@@ -321,14 +321,14 @@ void ChatClientImpl::handleContactStateChanged(
     }
 }
 
-bool ChatClientImpl::handleAddingByContact(
+bool ChatClientImpl::handleAddRequest(
     const AddRequestNotification& responseAction)
 {
     bool listenerAccepted = false;
     const std::string& requester = responseAction.getUserName();
     for (IChatClientListener* listener: m_clientListeners)
     {
-        listenerAccepted = listener->onAddingByContact(requester);
+        listenerAccepted = listener->onAddRequest(requester);
         if (listenerAccepted)
         {
             return true;

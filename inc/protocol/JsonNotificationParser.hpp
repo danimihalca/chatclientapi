@@ -25,7 +25,7 @@ public:
     ReceiveMessageNotification tryGetReceiveMessageNotification();
     ReceiveContactsNotification tryGetReceiveContactsNotification();
 
-    AddRequestNotification tryGetAddingByContactNotification();
+    AddRequestNotification tryGetAddRequestNotification();
     AddContactResponseNotification tryGetAddContactResponseNotification();
     RemovedByContactNotification tryGetRemovedByContactNotification();
 

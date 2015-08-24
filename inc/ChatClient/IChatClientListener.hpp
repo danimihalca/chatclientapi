@@ -24,7 +24,7 @@ public:
     virtual void onAddContactResponse(const std::string& userName, ADD_STATUS status) =0;
     virtual void onRegisterUpdateResponse(REGISTER_UPDATE_USER_STATUS status) = 0;
 
-    virtual bool onAddingByContact(const std::string& requester) = 0;
+    virtual bool onAddRequest(const std::string& requester) = 0;
     virtual ~IChatClientListener()
     {
     }
