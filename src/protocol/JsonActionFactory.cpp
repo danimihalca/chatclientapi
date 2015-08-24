@@ -1,13 +1,13 @@
-#include "JsonProtocol/ClientJsonFactory.hpp"
+#include "protocol/JsonActionFactory.hpp"
 
 #include <JsonChatProtocol/common_json_protocol.hpp>
 #include <Model/User.hpp>
 #include <Model/Message.hpp>
 
-#include <JsonProtocol/ActionJsonObject/ActionJsonObject.hpp>
+#include <protocol/ActionObject/JsonActionObject.hpp>
 
 
-IActionJsonObject* ClientJsonFactory::createLoginJson(const UserCredentials& userCredentials, USER_STATE state)
+IActionObject* JsonActionFactory::createLoginAction(const UserCredentials& userCredentials, USER_STATE state)
 {
     Json::Value root;
     root[ACTION] = ACTION_LOGIN;
@@ -19,19 +19,19 @@ IActionJsonObject* ClientJsonFactory::createLoginJson(const UserCredentials& use
     content[STATE] = state;
     root[CONTENT] = content;
 
-    return new ActionJsonObject(root);
+    return new JsonActionObject(root);
 }
 
 
-IActionJsonObject* ClientJsonFactory::createRequestContactsJson()
+IActionObject* JsonActionFactory::createRequestContactsAction()
 {
     Json::Value root;
     root[ACTION] = ACTION_GET_CONTACTS;
-    return new ActionJsonObject(root);
+    return new JsonActionObject(root);
 
 }
 
-IActionJsonObject* ClientJsonFactory::createSendMessageJson(
+IActionObject* JsonActionFactory::createSendMessageAction(
     const Message& message)
 {
     Json::Value root;
@@ -45,11 +45,11 @@ IActionJsonObject* ClientJsonFactory::createSendMessageJson(
 
     content[MESSAGE] = messageJson;
     root[CONTENT] = content;
-    return new ActionJsonObject(root);
+    return new JsonActionObject(root);
 
 }
 
-IActionJsonObject* ClientJsonFactory::createAddContactJson(const std::string& userName)
+IActionObject* JsonActionFactory::createAddContactAction(const std::string& userName)
 {
     Json::Value root;
     root[ACTION] = ACTION_ADD_CONTACT;
@@ -57,11 +57,11 @@ IActionJsonObject* ClientJsonFactory::createAddContactJson(const std::string& us
 
     content[USERNAME] = userName;
     root[CONTENT] = content;
-    return new ActionJsonObject(root);
+    return new JsonActionObject(root);
 
 }
 
-IActionJsonObject* ClientJsonFactory::createAddContactResolutionJson(const std::string& userName, bool accepted)
+IActionObject* JsonActionFactory::createAddContactResolutionAction(const std::string& userName, bool accepted)
 {
     Json::Value root;
     root[ACTION] = ACTION_ADD_CONTACT_RESOLUTION;
@@ -70,11 +70,11 @@ IActionJsonObject* ClientJsonFactory::createAddContactResolutionJson(const std::
     content[USERNAME] = userName;
     content[ACCEPTED] = accepted;
     root[CONTENT] = content;
-    return new ActionJsonObject(root);
+    return new JsonActionObject(root);
 
 }
 
-IActionJsonObject* ClientJsonFactory::createRemoveContactJson(int contactId)
+IActionObject* JsonActionFactory::createRemoveContactAction(int contactId)
 {
     Json::Value root;
     root[ACTION] = ACTION_REMOVE_CONTACT;
@@ -82,12 +82,12 @@ IActionJsonObject* ClientJsonFactory::createRemoveContactJson(int contactId)
 
     content[ID] = contactId;
     root[CONTENT] = content;
-    return new ActionJsonObject(root);
+    return new JsonActionObject(root);
 
 }
 
 
-IActionJsonObject* ClientJsonFactory::createChangeStateJson(USER_STATE state)
+IActionObject* JsonActionFactory::createChangeStateAction(USER_STATE state)
 {
     Json::Value root;
     root[ACTION] = ACTION_CHANGE_STATE;
@@ -95,12 +95,12 @@ IActionJsonObject* ClientJsonFactory::createChangeStateJson(USER_STATE state)
 
     content[STATE] = state;
     root[CONTENT] = content;
-    return new ActionJsonObject(root);
+    return new JsonActionObject(root);
 
 }
 
 
-IActionJsonObject* ClientJsonFactory::createUpdateUserJson(const User& user)
+IActionObject* JsonActionFactory::createUpdateUserAction(const User& user)
 {
     Json::Value root;
     root[ACTION] = ACTION_UPDATE_USER;
@@ -115,11 +115,11 @@ IActionJsonObject* ClientJsonFactory::createUpdateUserJson(const User& user)
     content[USER] = userJson;
 
     root[CONTENT] = content;
-    return new ActionJsonObject(root);
+    return new JsonActionObject(root);
 
 }
 
-IActionJsonObject* ClientJsonFactory::createRegisterUserJson(const User& user)
+IActionObject* JsonActionFactory::createRegisterUserAction(const User& user)
 {
     Json::Value root;
     root[ACTION] = ACTION_REGISTER_USER;
@@ -134,6 +134,6 @@ IActionJsonObject* ClientJsonFactory::createRegisterUserJson(const User& user)
     content[USER] = userJson;
 
     root[CONTENT] = content;
-    return new ActionJsonObject(root);
+    return new JsonActionObject(root);
 
 }

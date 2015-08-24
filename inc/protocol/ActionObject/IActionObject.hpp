@@ -3,7 +3,7 @@
 
 #include <json/json.h>
 
-class IActionJsonObject
+class IActionObject
 {
 public:
     virtual std::string toString() = 0;

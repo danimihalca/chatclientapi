@@ -8,19 +8,19 @@
 #include "WebsocketClient/IWebsocketClientListener.hpp"
 
 class IChatClientListener;
-class IClientJsonFactory;
-class IClientJsonParser;
+class IActionFactory;
+class INotificationParser;
 class IWebsocketClient;
 
-class LoginResponseJson;
-class ContactStateChangedJson;
-class ReceiveMessageJson;
-class ReceiveContactsJson;
-class AddingByContactJson;
-class AddContactResponseJson;
-class RemovedByContactJson;
+class LoginResponseNotification;
+class ContactStateChangedNotification;
+class ReceiveMessageNotification;
+class ReceiveContactsNotification;
+class AddRequestNotification;
+class AddContactResponseNotification;
+class RemovedByContactNotification;
 
-class RegisterUpdateUserResponseJson;
+class RegisterUpdateNotification;
 
 class ChatClientImpl : public IChatClient, public IWebsocketClientListener
 {
@@ -68,23 +68,23 @@ private:
     void performLogin();
     void performRegister();
 
-    void handleLoginResponse(const LoginResponseJson& loginResponseJson);
-    void handleReceiveContacts(const ReceiveContactsJson& responseJson);
-    void handleReceiveMessage(const ReceiveMessageJson& responseJson);
-    void handleContactStateChanged(const ContactStateChangedJson& responseJson);
+    void handleLoginResponse(const LoginResponseNotification& loginResponseNotification);
+    void handleReceiveContacts(const ReceiveContactsNotification& responseNotification);
+    void handleReceiveMessage(const ReceiveMessageNotification& responseNotification);
+    void handleContactStateChanged(const ContactStateChangedNotification& responseNotification);
 
-    bool handleAddingByContact(const AddingByContactJson& responseJson);
-    void handleAddContactResponse(const AddContactResponseJson& responseJson);
-    void handleRemovedByContact(const RemovedByContactJson& responseJson);
+    bool handleAddingByContact(const AddRequestNotification& responseNotification);
+    void handleAddContactResponse(const AddContactResponseNotification& responseNotification);
+    void handleRemovedByContact(const RemovedByContactNotification& responseNotification);
 
-    void handleRegisterUpdateResponse(const RegisterUpdateUserResponseJson& responseJson);
+    void handleRegisterUpdateResponse(const RegisterUpdateNotification& responseNotification);
 
 private:
     Chat_Client_State m_state;
     std::unique_ptr<IWebsocketClient> p_websocketClient;
     std::list<IChatClientListener*> m_clientListeners;
-    std::unique_ptr<IClientJsonFactory> p_jsonFactory;
-    std::unique_ptr<IClientJsonParser> p_jsonParser;
+    std::unique_ptr<IActionFactory> p_actionFactory;
+    std::unique_ptr<INotificationParser> p_notificationParser;
 
     UserCredentials* p_userCredentials;
     USER_STATE* p_state;

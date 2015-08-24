@@ -34,18 +34,28 @@ SET (HEADER_FILES inc/chat_client_common.hpp
                   inc/WebsocketClient/WebsocketClient.hpp
                   inc/WebsocketCallback/IWebsocketCallbackListener.hpp
                   inc/WebsocketCallback/websocket_callback.hpp
-                  inc/JsonProtocol/IClientJsonFactory.hpp
-                  inc/JsonProtocol/IClientJsonParser.hpp
-                  inc/JsonProtocol/ClientJsonParser.hpp
-                  inc/JsonProtocol/ClientJsonFactory.hpp
-                  inc/JsonProtocol/ActionJsonObject/IActionJsonObject.hpp
-                  inc/JsonProtocol/ActionJsonObject/ActionJsonObject.hpp)
+                  inc/protocol/IActionFactory.hpp
+                  inc/protocol/INotificationParser.hpp
+                  inc/protocol/JsonNotificationParser.hpp
+                  inc/protocol/JsonActionFactory.hpp
+                  inc/protocol/ActionObject/IActionObject.hpp
+                  inc/protocol/ActionObject/JsonActionObject.hpp
+                  inc/protocol/NotificationObject/RemovedByContactNotification.hpp
+                  inc/protocol/NotificationObject/AddContactResponseNotification.hpp
+                  inc/protocol/NotificationObject/AddRequestNotification.hpp
+                  inc/protocol/NotificationObject/ContactStateChangedNotification.hpp
+                  inc/protocol/NotificationObject/LoginResponseNotification.hpp
+                  inc/protocol/NotificationObject/ReceiveContactsNotification.hpp
+                  inc/protocol/NotificationObject/ReceiveMessageNotification.hpp
+                  inc/protocol/NotificationObject/RegisterUpdateNotification.hpp)
+
+
 SET (SOURCE_FILES src/ChatClient/ChatClient.cpp
                   src/ChatClient/ChatClientImpl.cpp
                   src/WebsocketClient/WebsocketClient.cpp
                   src/WebsocketCallback/websocket_callback.cpp
-                  src/JsonProtocol/ClientJsonParser.cpp
-                  src/JsonProtocol/ClientJsonFactory.cpp)
+                  src/protocol/JsonNotificationParser.cpp
+                  src/protocol/JsonActionFactory.cpp)
 
 LINK_DIRECTORIES( ${LIBRARY_INSTALL_PATH})
 

@@ -1,13 +1,13 @@
 #ifndef ACTIONJSONOBJECT_HPP
 #define ACTIONJSONOBJECT_HPP
 
-#include "IActionJsonObject.hpp"
+#include "IActionObject.hpp"
 #include <memory>
 
-class ActionJsonObject: public IActionJsonObject
+class JsonActionObject: public IActionObject
 {
 public:
-    ActionJsonObject(Json::Value root):
+    JsonActionObject(Json::Value root):
         m_root(root)
     {
         if (s_writer.get() == nullptr)
@@ -40,7 +40,7 @@ private:
     static std::unique_ptr<Json::StreamWriter> s_writer;
 };
 
-std::unique_ptr<Json::StreamWriter> ActionJsonObject::s_writer;
+std::unique_ptr<Json::StreamWriter> JsonActionObject::s_writer;
 
 #endif // ACTIONJSONOBJECT_HPP
 

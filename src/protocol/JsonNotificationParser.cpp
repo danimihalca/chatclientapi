@@ -1,4 +1,4 @@
-#include "JsonProtocol/ClientJsonParser.hpp"
+#include "protocol/JsonNotificationParser.hpp"
 
 #include <iostream>
 
@@ -10,7 +10,7 @@
 
 
 
-ClientJsonParser::ClientJsonParser()
+JsonNotificationParser::JsonNotificationParser()
 {
     Json::CharReaderBuilder builder;
     builder["collectComments"] = true;
@@ -18,12 +18,12 @@ ClientJsonParser::ClientJsonParser()
     p_reader = builder.newCharReader();
 }
 
-ClientJsonParser::~ClientJsonParser()
+JsonNotificationParser::~JsonNotificationParser()
 {
     delete p_reader;
 }
 
-bool ClientJsonParser::trySetJsonString(const std::string& json)
+bool JsonNotificationParser::trySetNotificationString(const std::string& json)
 {
     LOG_DEBUG("PARSING : %s\n",json.c_str());
     const char* cString = json.c_str();
@@ -33,13 +33,13 @@ bool ClientJsonParser::trySetJsonString(const std::string& json)
                            nullptr);
 }
 
-NOTIFICATION_TYPE ClientJsonParser::getActionType()
+NOTIFICATION_TYPE JsonNotificationParser::getNotificationType()
 {
     return static_cast<NOTIFICATION_TYPE>(m_root[NOTIFICATION].asInt());
 }
 
 
-LoginResponseJson ClientJsonParser::tryGetLoginResponseJson()
+LoginResponseNotification JsonNotificationParser::tryGetLoginResponseNotification()
 {
     Json::Value content = m_root[CONTENT];
 
@@ -54,21 +54,21 @@ LoginResponseJson ClientJsonParser::tryGetLoginResponseJson()
         userDetails.setLastName(content[USER_DETAILS][LASTNAME].asString());
     }
 
-    LoginResponseJson responseJson;
+    LoginResponseNotification responseJson;
     responseJson.setAutheticationStatus(status);
     responseJson.setUserDetails(userDetails);
 
     return responseJson;
 }
 
-ContactStateChangedJson ClientJsonParser::tryGetContactStateChangedJson()
+ContactStateChangedNotification JsonNotificationParser::tryGetContactStateChangedNotification()
 {
     Json::Value content = m_root[CONTENT];
 
     int contactId = content[CONTACT][ID].asInt();
     USER_STATE state =
         static_cast<USER_STATE>(content[CONTACT][STATE].asInt());
-    ContactStateChangedJson responseJson;
+    ContactStateChangedNotification responseJson;
 
     responseJson.setContactId(contactId);
     responseJson.setContactState(state);
@@ -76,7 +76,7 @@ ContactStateChangedJson ClientJsonParser::tryGetContactStateChangedJson()
     return responseJson;
 }
 
-ReceiveMessageJson ClientJsonParser::tryGetReceiveMessageJson()
+ReceiveMessageNotification JsonNotificationParser::tryGetReceiveMessageNotification()
 {
     Json::Value content = m_root[CONTENT];
 
@@ -84,14 +84,14 @@ ReceiveMessageJson ClientJsonParser::tryGetReceiveMessageJson()
         content[MESSAGE][SENDER_ID].asInt(),
         content[MESSAGE][MESSAGE_TEXT].asString());
 
-    ReceiveMessageJson responseJson;
+    ReceiveMessageNotification responseJson;
 
     responseJson.setMessage(message);
 
     return responseJson;
 }
 
-ReceiveContactsJson ClientJsonParser::tryGetReceiveContactsJson()
+ReceiveContactsNotification JsonNotificationParser::tryGetReceiveContactsNotification()
 {
     Json::Value content = m_root[CONTENT];
 
@@ -111,48 +111,48 @@ ReceiveContactsJson ClientJsonParser::tryGetReceiveContactsJson()
     }
 
 
-    ReceiveContactsJson responseJson;
+    ReceiveContactsNotification responseJson;
     responseJson.setContacts(contacts);
 
     return responseJson;
 
 }
 
-AddingByContactJson ClientJsonParser::tryGetAddingByContactJson()
+AddRequestNotification JsonNotificationParser::tryGetAddingByContactNotification()
 {
     Json::Value content = m_root[CONTENT];
 
     std::string userName = content[USERNAME].asString();
 
-    AddingByContactJson requestJson(userName);
+    AddRequestNotification requestJson(userName);
 
     return requestJson;
 }
 
-AddContactResponseJson ClientJsonParser::tryGetAddContactResponseJson()
+AddContactResponseNotification JsonNotificationParser::tryGetAddContactResponseNotification()
 {
     Json::Value content = m_root[CONTENT];
 
     std::string userName = content[USERNAME].asString();
     ADD_STATUS addStatus = static_cast<ADD_STATUS>(content[ADD_REQUEST_STATUS].asInt());
-    AddContactResponseJson requestJson(userName, addStatus);
+    AddContactResponseNotification requestJson(userName, addStatus);
 
     return requestJson;
 }
 
-RemovedByContactJson ClientJsonParser::tryGetRemovedByContactJson()
+RemovedByContactNotification JsonNotificationParser::tryGetRemovedByContactNotification()
 {
     Json::Value content = m_root[CONTENT];
 
     int contactId = content[ID].asInt();
 
-    RemovedByContactJson requestJson(contactId);
+    RemovedByContactNotification requestJson(contactId);
 
     return requestJson;
 }
 
 
-RegisterUpdateUserResponseJson ClientJsonParser::tryGetRegisterUpdateUserJson()
+RegisterUpdateNotification JsonNotificationParser::tryGetRegisterUpdateUserNotification()
 {
     Json::Value content = m_root[CONTENT];
 
@@ -161,7 +161,7 @@ RegisterUpdateUserResponseJson ClientJsonParser::tryGetRegisterUpdateUserJson()
                                                  .
                                                  asInt());
 
-    RegisterUpdateUserResponseJson requestJson(status);
+    RegisterUpdateNotification requestJson(status);
 
     return requestJson;
 }
