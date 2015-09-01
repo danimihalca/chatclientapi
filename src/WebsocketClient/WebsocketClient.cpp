@@ -9,11 +9,11 @@
 #include <debug_utils/log_debug.hpp>
 
 WebsocketClient::WebsocketClient() :
-    m_websocketListeners()
+    m_listeners()
 {
     m_protocols[0] = default_protocol;
     m_protocols[1] = null_protocol;
-    m_userData= user_data{(IWebsocketCallbackListener*)this, &m_mutex,&m_messageQueue};
+    m_callbackData= callback_data{(IWebsocketCallbackListener*)this, &m_mutex,&m_messageQueue};
 }
 
 void WebsocketClient::initialize()
@@ -28,7 +28,7 @@ void WebsocketClient::initialize()
 
 //    m_userData = new user_data{(IWebsocketCallbackListener*)this, m_mutex};
 
-    m_info.user = &m_userData;
+    m_info.user = &m_callbackData;
     m_info.gid = -1;
     m_info.uid = -1;
     m_info.options = 0;
@@ -83,12 +83,12 @@ void WebsocketClient::startService()
     {
         initialize();
     }
-    if (m_thread.joinable())
+    if (m_serviceThread.joinable())
     {
-        m_thread.join();
+        m_serviceThread.join();
     }
     b_running = true;
-    m_thread = std::thread(&WebsocketClient::run, this);
+    m_serviceThread = std::thread(&WebsocketClient::runService, this);
 }
 
 
@@ -114,9 +114,9 @@ void WebsocketClient::sendText(const std::string& text)
 void WebsocketClient::closeConnection()
 {
     b_running = false;
-    if( m_thread.joinable())
+    if( m_serviceThread.joinable())
     {
-        m_thread.join();
+        m_serviceThread.join();
     }
     b_initialized = false;
     libwebsocket_context_destroy(p_context);
@@ -126,13 +126,13 @@ void WebsocketClient::closeConnection()
 void WebsocketClient::addListener(
     IWebsocketClientListener* listener)
 {
-    m_websocketListeners.push_back(listener);
+    m_listeners.push_back(listener);
 }
 
 void WebsocketClient::removeListener(
     IWebsocketClientListener* listener)
 {
-    m_websocketListeners.remove(listener);
+    m_listeners.remove(listener);
 }
 
 WebsocketClient::~WebsocketClient()
@@ -149,7 +149,7 @@ WebsocketClient::~WebsocketClient()
 
 void WebsocketClient::onTextReceived(const std::string& message)
 {
-    for (auto listener: m_websocketListeners)
+    for (auto listener: m_listeners)
     {
         listener->onTextReceived(message);
     }
@@ -160,7 +160,7 @@ void WebsocketClient::onConnected()
 {
     b_connected = true;
 
-    for (auto listener: m_websocketListeners)
+    for (auto listener: m_listeners)
     {
         listener->onConnected();
     }
@@ -170,7 +170,7 @@ void WebsocketClient::onDisconnected()
 {
     b_connected = false;
 
-    for (auto listener: m_websocketListeners)
+    for (auto listener: m_listeners)
     {
         listener->onDisconnected();
     }
@@ -181,7 +181,7 @@ void WebsocketClient::onConnectionError()
 {
 //    if (!b_notifiedConnectionError)
 //    {
-        for (auto listener: m_websocketListeners)
+        for (auto listener: m_listeners)
         {
             listener->onConnectionError();
         }
@@ -190,7 +190,7 @@ void WebsocketClient::onConnectionError()
 //    }
 }
 
-void WebsocketClient::run()
+void WebsocketClient::runService()
 {
     while(b_running)
     {

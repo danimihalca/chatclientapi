@@ -35,6 +35,7 @@ ChatClientImpl::~ChatClientImpl()
 void ChatClientImpl::setServer(const std::string& address,
                              uint16_t           port)
 {
+    m_state = INITIAL;
     p_websocketClient->setServer(address, port);
 }
 
@@ -52,8 +53,8 @@ void ChatClientImpl::login(const UserCredentials& userCredentials,
              m_state == DISCONNECTED ||
              m_state == CONNECTION_ERROR)
     {
-        p_websocketClient->connect();
         m_state = LOGGING_IN;
+        p_websocketClient->connect();
     }
 
 }
@@ -96,8 +97,8 @@ void ChatClientImpl::registerUser(const User& user)
              m_state == DISCONNECTED ||
              m_state == CONNECTION_ERROR)
     {
-        p_websocketClient->connect();
         m_state = REGISTERING;
+        p_websocketClient->connect();
     }
 }
 

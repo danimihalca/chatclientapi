@@ -11,7 +11,7 @@ int websocket_callback(libwebsocket_context*         context,
                        size_t /*len*/)
 {
 //    struct session_data* pss = (struct session_data*)user;
-    user_data* ud = (user_data*) libwebsocket_context_user(context);
+    callback_data* ud = (callback_data*) libwebsocket_context_user(context);
 
 
     switch(reason)

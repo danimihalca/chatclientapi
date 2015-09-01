@@ -10,7 +10,7 @@ class IWebsocketCallbackListener;
 
 const int MAX_PAYLOAD = 1400;
 
-struct user_data
+struct callback_data
 {
     IWebsocketCallbackListener* listener;
     std::mutex* mutex;

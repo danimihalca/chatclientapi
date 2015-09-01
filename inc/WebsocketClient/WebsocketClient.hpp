@@ -43,7 +43,7 @@ public:
     void onConnectionError();
 
 private:
-    void run();
+    void runService();
 
 private:
     //libwebsockets specific objects
@@ -52,16 +52,16 @@ private:
 //    struct session_data m_sessionData;
     struct lws_context_creation_info m_info;
 
-    struct user_data m_userData;
+    struct callback_data m_callbackData;
 
     //flow control
-    std::thread m_thread;
+    std::thread m_serviceThread;
     std::mutex m_mutex;
     bool b_connected = false;
     bool b_running = false;
     bool b_initialized = false;
 
-    std::list<IWebsocketClientListener*> m_websocketListeners;
+    std::list<IWebsocketClientListener*> m_listeners;
     std::string m_serverAddress;
     uint16_t m_ServerPort;
 
