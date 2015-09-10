@@ -8,7 +8,7 @@ class RegisterUpdateNotification
 public:
     RegisterUpdateNotification() = default;
 
-    RegisterUpdateNotification(REGISTER_UPDATE_USER_STATUS status):
+    RegisterUpdateNotification(REGISTER_UPDATE_USER_STATUS status) :
         m_status(status)
     {
     }

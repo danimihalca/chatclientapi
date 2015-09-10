@@ -11,13 +11,17 @@
 WebsocketClient::WebsocketClient() :
     m_listeners()
 {
+    LOG_DEBUG_METHOD;
     m_protocols[0] = default_protocol;
     m_protocols[1] = null_protocol;
-    m_callbackData= callback_data{(IWebsocketCallbackListener*)this, &m_mutex,&m_messageQueue};
+    m_callbackData =
+        callback_data {(IWebsocketCallbackListener*)this, &m_mutex,
+                       &m_messageQueue};
 }
 
 void WebsocketClient::initialize()
 {
+    LOG_DEBUG_METHOD;
 
     memset(&m_info, 0, sizeof(m_info));
 
@@ -44,41 +48,44 @@ void WebsocketClient::initialize()
 
 void WebsocketClient::setServer(const std::string& address, uint16_t port)
 {
+    LOG_DEBUG_METHOD;
     m_serverAddress = address;
     m_ServerPort = port;
 }
 
 void WebsocketClient::connect()
 {
+    LOG_DEBUG_METHOD;
     if(!b_initialized)
     {
         initialize();
     }
-//    b_notifiedConnectionError = false;
     int use_ssl = 0;
     struct libwebsocket* wsi = libwebsocket_client_connect(p_context,
-                                                                    m_serverAddress.c_str(),
-                                                                    m_ServerPort,
-                                                                    use_ssl,
-                                                                    "/",
-                                                                    m_serverAddress.c_str(),
-                                                                    "origin",
-                                                                    NULL,
-                                                                    -1);
+                                                           m_serverAddress.c_str(),
+                                                           m_ServerPort,
+                                                           use_ssl,
+                                                           "/",
+                                                           m_serverAddress.c_str(),
+                                                           "origin",
+                                                           NULL,
+                                                           -1);
 
     if(!wsi)
     {
         LOG_DEBUG("Client failed to connect to %s:%u\n",
-                 m_serverAddress.c_str(), m_ServerPort);
+                  m_serverAddress.c_str(), m_ServerPort);
         onConnectionError();
         return;
     }
-    LOG_DEBUG("Client connecting to %s:%u\n", m_serverAddress.c_str(), m_ServerPort);
+    LOG_DEBUG("Client connecting to %s:%u\n",
+              m_serverAddress.c_str(), m_ServerPort);
     startService();
 }
 
 void WebsocketClient::startService()
 {
+    LOG_DEBUG_METHOD;
     if(!b_initialized)
     {
         initialize();
@@ -94,25 +101,22 @@ void WebsocketClient::startService()
 
 void WebsocketClient::sendText(const std::string& text)
 {
+    LOG_DEBUG_METHOD;
     std::lock_guard<std::mutex> lock(m_mutex);
 
-    std::string bufferedText = std::string(LWS_SEND_BUFFER_PRE_PADDING,0)+
+    std::string bufferedText = std::string(LWS_SEND_BUFFER_PRE_PADDING,0) +
                                text +
                                std::string(LWS_SEND_BUFFER_POST_PADDING,0);
     LOG_DEBUG("SENDING : %s\n",text.c_str());
 
     m_messageQueue.push(bufferedText);
 
-//    memset(&m_sessionData.buf[LWS_SEND_BUFFER_PRE_PADDING],0,MAX_PAYLOAD);
-//    memcpy(&m_sessionData.buf[LWS_SEND_BUFFER_PRE_PADDING], text.c_str(),
-//           strlen(text.c_str()));
-//    m_sessionData.len = strlen(text.c_str());
-
     libwebsocket_callback_on_writable_all_protocol(&m_protocols[0]);
 }
 
 void WebsocketClient::closeConnection()
 {
+    LOG_DEBUG_METHOD;
     b_running = false;
     if( m_serviceThread.joinable())
     {
@@ -126,29 +130,29 @@ void WebsocketClient::closeConnection()
 void WebsocketClient::addListener(
     IWebsocketClientListener* listener)
 {
+    LOG_DEBUG_METHOD;
     m_listeners.push_back(listener);
 }
 
 void WebsocketClient::removeListener(
     IWebsocketClientListener* listener)
 {
+    LOG_DEBUG_METHOD;
     m_listeners.remove(listener);
 }
 
 WebsocketClient::~WebsocketClient()
 {
+    LOG_DEBUG_METHOD;
     if(b_connected)
     {
         closeConnection();
     }
-//    if (m_userData != nullptr)
-//    {
-//        delete m_userData;
-//    }
 }
 
 void WebsocketClient::onTextReceived(const std::string& message)
 {
+    LOG_DEBUG_METHOD;
     for (auto listener: m_listeners)
     {
         listener->onTextReceived(message);
@@ -158,6 +162,7 @@ void WebsocketClient::onTextReceived(const std::string& message)
 
 void WebsocketClient::onConnected()
 {
+    LOG_DEBUG_METHOD;
     b_connected = true;
 
     for (auto listener: m_listeners)
@@ -168,6 +173,7 @@ void WebsocketClient::onConnected()
 
 void WebsocketClient::onDisconnected()
 {
+    LOG_DEBUG_METHOD;
     b_connected = false;
 
     for (auto listener: m_listeners)
@@ -179,14 +185,16 @@ void WebsocketClient::onDisconnected()
 
 void WebsocketClient::onConnectionError()
 {
+    LOG_DEBUG_METHOD;
+
 //    if (!b_notifiedConnectionError)
 //    {
-        for (auto listener: m_listeners)
-        {
-            listener->onConnectionError();
-        }
+    for (auto listener: m_listeners)
+    {
+        listener->onConnectionError();
+    }
 //        b_notifiedConnectionError = true;
-        b_running = false;
+    b_running = false;
 //    }
 }
 

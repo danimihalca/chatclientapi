@@ -6,13 +6,12 @@
 
 #include <json/json.h>
 
-class JsonActionObject: public IActionObject
+class JsonActionObject : public IActionObject
 {
 public:
-    JsonActionObject(Json::Value root):
+    JsonActionObject(Json::Value root) :
         m_root(root)
     {
-
     }
 
     std::string toString()

@@ -9,7 +9,7 @@
 
 
 
-class JsonNotificationParser: public INotificationParser
+class JsonNotificationParser : public INotificationParser
 {
 public:
     JsonNotificationParser();

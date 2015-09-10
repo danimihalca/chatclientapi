@@ -62,7 +62,9 @@ int websocket_callback(libwebsocket_context*         context,
         case LWS_CALLBACK_CLIENT_WRITEABLE:
         {
             std::lock_guard<std::mutex> lock(*ud->mutex);
+            LOG_DEBUG("QUEUE size: %d\n",ud->messageQueue->size());
             std::string& text = ud->messageQueue->front();
+            LOG_DEBUG("WRITE: %s\n", text.c_str());
             size_t length = text.length() - LWS_SEND_BUFFER_POST_PADDING -LWS_SEND_BUFFER_PRE_PADDING;
             libwebsocket_write(wsi,
                                        (unsigned char*)&(text.c_str()[LWS_SEND_BUFFER_PRE_PADDING]),

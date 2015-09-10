@@ -8,7 +8,7 @@ endif()
 
 
 add_definitions(-DBUILDING_LIBRARY)
-
+add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 if(${CMAKE_BUILD_TYPE} MATCHES Debug)
     add_definitions(-DENABLE_LOG_DEBUG)
 endif()

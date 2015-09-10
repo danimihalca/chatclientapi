@@ -6,19 +6,19 @@
 class AddRequestNotification
 {
 public:
-        AddRequestNotification() = default;
-        inline AddRequestNotification(const std::string& userName) :
-                m_userName(userName)
-        {
-        }
+    AddRequestNotification() = default;
+    inline AddRequestNotification(const std::string& userName) :
+        m_userName(userName)
+    {
+    }
 
-        const std::string& getUserName() const
-        {
-                return m_userName;
-        }
+    const std::string& getUserName() const
+    {
+        return m_userName;
+    }
 
 private:
-        std::string m_userName;
+    std::string m_userName;
 };
 
 #endif //ADDINGBYCONTACTJSON_HPP

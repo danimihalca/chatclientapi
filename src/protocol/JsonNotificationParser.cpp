@@ -12,6 +12,7 @@
 
 JsonNotificationParser::JsonNotificationParser()
 {
+    LOG_DEBUG_METHOD;
     Json::CharReaderBuilder builder;
     builder["collectComments"] = true;
     builder["allowComments"] = true;
@@ -20,11 +21,13 @@ JsonNotificationParser::JsonNotificationParser()
 
 JsonNotificationParser::~JsonNotificationParser()
 {
+    LOG_DEBUG_METHOD;
     delete p_reader;
 }
 
 bool JsonNotificationParser::trySetNotificationString(const std::string& json)
 {
+    LOG_DEBUG_METHOD;
     LOG_DEBUG("PARSING : %s\n",json.c_str());
     const char* cString = json.c_str();
     return p_reader->parse(cString,
@@ -35,12 +38,14 @@ bool JsonNotificationParser::trySetNotificationString(const std::string& json)
 
 NOTIFICATION_TYPE JsonNotificationParser::getNotificationType()
 {
+    LOG_DEBUG_METHOD;
     return static_cast<NOTIFICATION_TYPE>(m_root[NOTIFICATION].asInt());
 }
 
 
 LoginResponseNotification JsonNotificationParser::tryGetLoginResponseNotification()
 {
+    LOG_DEBUG_METHOD;
     Json::Value content = m_root[CONTENT];
 
     AUTH_STATUS status =
@@ -63,6 +68,7 @@ LoginResponseNotification JsonNotificationParser::tryGetLoginResponseNotificatio
 
 ContactStateChangedNotification JsonNotificationParser::tryGetContactStateChangedNotification()
 {
+    LOG_DEBUG_METHOD;
     Json::Value content = m_root[CONTENT];
 
     int contactId = content[CONTACT][ID].asInt();
@@ -78,6 +84,7 @@ ContactStateChangedNotification JsonNotificationParser::tryGetContactStateChange
 
 ReceiveMessageNotification JsonNotificationParser::tryGetReceiveMessageNotification()
 {
+    LOG_DEBUG_METHOD;
     Json::Value content = m_root[CONTENT];
 
     Message message(
@@ -93,6 +100,7 @@ ReceiveMessageNotification JsonNotificationParser::tryGetReceiveMessageNotificat
 
 ReceiveContactsNotification JsonNotificationParser::tryGetReceiveContactsNotification()
 {
+    LOG_DEBUG_METHOD;
     Json::Value content = m_root[CONTENT];
 
     Json::Value contactsJson = content[CONTACTS];
@@ -120,6 +128,7 @@ ReceiveContactsNotification JsonNotificationParser::tryGetReceiveContactsNotific
 
 AddRequestNotification JsonNotificationParser::tryGetAddRequestNotification()
 {
+    LOG_DEBUG_METHOD;
     Json::Value content = m_root[CONTENT];
 
     std::string userName = content[USERNAME].asString();
@@ -131,6 +140,7 @@ AddRequestNotification JsonNotificationParser::tryGetAddRequestNotification()
 
 AddContactResponseNotification JsonNotificationParser::tryGetAddContactResponseNotification()
 {
+    LOG_DEBUG_METHOD;
     Json::Value content = m_root[CONTENT];
 
     std::string userName = content[USERNAME].asString();
@@ -142,6 +152,7 @@ AddContactResponseNotification JsonNotificationParser::tryGetAddContactResponseN
 
 RemovedByContactNotification JsonNotificationParser::tryGetRemovedByContactNotification()
 {
+    LOG_DEBUG_METHOD;
     Json::Value content = m_root[CONTENT];
 
     int contactId = content[ID].asInt();
@@ -154,6 +165,7 @@ RemovedByContactNotification JsonNotificationParser::tryGetRemovedByContactNotif
 
 RegisterUpdateNotification JsonNotificationParser::tryGetRegisterUpdateUserNotification()
 {
+    LOG_DEBUG_METHOD;
     Json::Value content = m_root[CONTENT];
 
     REGISTER_UPDATE_USER_STATUS status =

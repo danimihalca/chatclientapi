@@ -44,7 +44,8 @@ public:
     // Implements IChatClient interface
 public:
     virtual void setServer(const std::string& address, uint16_t port);
-    virtual void login(const UserCredentials& userCredentials, USER_STATE state);
+    virtual void login(const UserCredentials& userCredentials,
+                       USER_STATE             state);
     virtual void changeState(USER_STATE state);
     virtual void registerUser(const User& user);
     virtual void updateUser(const User& user);
@@ -60,7 +61,7 @@ public:
     // Implements IWebsocketClientListener interface
 public:
     void onTextReceived(const std::string& message);
-   virtual void onConnected();
+    virtual void onConnected();
     void onDisconnected();
     virtual void onConnectionError();
 
@@ -68,16 +69,23 @@ private:
     void performLogin();
     void performRegister();
 
-    void handleLoginResponse(const LoginResponseNotification& loginResponseNotification);
-    void handleReceiveContacts(const ReceiveContactsNotification& responseNotification);
-    void handleReceiveMessage(const ReceiveMessageNotification& responseNotification);
-    void handleContactStateChanged(const ContactStateChangedNotification& responseNotification);
+    void handleLoginResponse(
+        const LoginResponseNotification& loginResponseNotification);
+    void handleReceiveContacts(
+        const ReceiveContactsNotification& responseNotification);
+    void handleReceiveMessage(
+        const ReceiveMessageNotification& responseNotification);
+    void handleContactStateChanged(
+        const ContactStateChangedNotification& responseNotification);
 
     bool handleAddRequest(const AddRequestNotification& responseNotification);
-    void handleAddContactResponse(const AddContactResponseNotification& responseNotification);
-    void handleRemovedByContact(const RemovedByContactNotification& responseNotification);
+    void handleAddContactResponse(
+        const AddContactResponseNotification& responseNotification);
+    void handleRemovedByContact(
+        const RemovedByContactNotification& responseNotification);
 
-    void handleRegisterUpdateResponse(const RegisterUpdateNotification& responseNotification);
+    void handleRegisterUpdateResponse(
+        const RegisterUpdateNotification& responseNotification);
 
 private:
     Chat_Client_State m_state;

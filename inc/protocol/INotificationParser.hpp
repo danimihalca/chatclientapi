@@ -25,15 +25,19 @@ public:
     virtual NOTIFICATION_TYPE getNotificationType() = 0;
 
     virtual LoginResponseNotification tryGetLoginResponseNotification() = 0;
-    virtual ContactStateChangedNotification tryGetContactStateChangedNotification() = 0;
+    virtual ContactStateChangedNotification
+    tryGetContactStateChangedNotification() = 0;
     virtual ReceiveMessageNotification tryGetReceiveMessageNotification() = 0;
     virtual ReceiveContactsNotification tryGetReceiveContactsNotification() = 0;
 
     virtual AddRequestNotification tryGetAddRequestNotification() = 0;
-    virtual AddContactResponseNotification tryGetAddContactResponseNotification() = 0;
-    virtual RemovedByContactNotification tryGetRemovedByContactNotification() = 0;
+    virtual AddContactResponseNotification tryGetAddContactResponseNotification()
+        = 0;
+    virtual RemovedByContactNotification tryGetRemovedByContactNotification() =
+        0;
 
-    virtual RegisterUpdateNotification tryGetRegisterUpdateUserNotification() = 0;
+    virtual RegisterUpdateNotification tryGetRegisterUpdateUserNotification() =
+        0;
 
     virtual ~INotificationParser()
     {

@@ -6,9 +6,13 @@
 
 #include <protocol/ActionObject/JsonActionObject.hpp>
 
+#include <debug_utils/log_debug.hpp>
 
-IActionObject* JsonActionFactory::createLoginAction(const UserCredentials& userCredentials, USER_STATE state)
+IActionObject* JsonActionFactory::createLoginAction(
+    const UserCredentials& userCredentials,
+    USER_STATE             state)
 {
+    LOG_DEBUG_METHOD;
     Json::Value root;
     root[ACTION] = ACTION_LOGIN;
     Json::Value content;
@@ -25,6 +29,7 @@ IActionObject* JsonActionFactory::createLoginAction(const UserCredentials& userC
 
 IActionObject* JsonActionFactory::createRequestContactsAction()
 {
+    LOG_DEBUG_METHOD;
     Json::Value root;
     root[ACTION] = ACTION_GET_CONTACTS;
     return new JsonActionObject(root);
@@ -34,6 +39,7 @@ IActionObject* JsonActionFactory::createRequestContactsAction()
 IActionObject* JsonActionFactory::createSendMessageAction(
     const Message& message)
 {
+    LOG_DEBUG_METHOD;
     Json::Value root;
     root[ACTION] = ACTION_SEND_MESSAGE;
     Json::Value content;
@@ -49,8 +55,10 @@ IActionObject* JsonActionFactory::createSendMessageAction(
 
 }
 
-IActionObject* JsonActionFactory::createAddContactAction(const std::string& userName)
+IActionObject* JsonActionFactory::createAddContactAction(
+    const std::string& userName)
 {
+    LOG_DEBUG_METHOD;
     Json::Value root;
     root[ACTION] = ACTION_ADD_CONTACT;
     Json::Value content;
@@ -61,8 +69,11 @@ IActionObject* JsonActionFactory::createAddContactAction(const std::string& user
 
 }
 
-IActionObject* JsonActionFactory::createAddContactResolutionAction(const std::string& userName, bool accepted)
+IActionObject* JsonActionFactory::createAddContactResolutionAction(
+    const std::string& userName,
+    bool               accepted)
 {
+    LOG_DEBUG_METHOD;
     Json::Value root;
     root[ACTION] = ACTION_ADD_CONTACT_RESOLUTION;
     Json::Value content;
@@ -76,6 +87,7 @@ IActionObject* JsonActionFactory::createAddContactResolutionAction(const std::st
 
 IActionObject* JsonActionFactory::createRemoveContactAction(int contactId)
 {
+    LOG_DEBUG_METHOD;
     Json::Value root;
     root[ACTION] = ACTION_REMOVE_CONTACT;
     Json::Value content;
@@ -89,6 +101,7 @@ IActionObject* JsonActionFactory::createRemoveContactAction(int contactId)
 
 IActionObject* JsonActionFactory::createChangeStateAction(USER_STATE state)
 {
+    LOG_DEBUG_METHOD;
     Json::Value root;
     root[ACTION] = ACTION_CHANGE_STATE;
     Json::Value content;
@@ -102,6 +115,7 @@ IActionObject* JsonActionFactory::createChangeStateAction(USER_STATE state)
 
 IActionObject* JsonActionFactory::createUpdateUserAction(const User& user)
 {
+    LOG_DEBUG_METHOD;
     Json::Value root;
     root[ACTION] = ACTION_UPDATE_USER;
     Json::Value content;
@@ -121,6 +135,7 @@ IActionObject* JsonActionFactory::createUpdateUserAction(const User& user)
 
 IActionObject* JsonActionFactory::createRegisterUserAction(const User& user)
 {
+    LOG_DEBUG_METHOD;
     Json::Value root;
     root[ACTION] = ACTION_REGISTER_USER;
     Json::Value content;

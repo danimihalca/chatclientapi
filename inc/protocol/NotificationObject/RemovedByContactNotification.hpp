@@ -6,19 +6,19 @@
 class RemovedByContactNotification
 {
 public:
-        RemovedByContactNotification() = default;
-        inline RemovedByContactNotification(int contactId) :
-                m_contactId(contactId)
-        {
-        }
+    RemovedByContactNotification() = default;
+    inline RemovedByContactNotification(int contactId) :
+        m_contactId(contactId)
+    {
+    }
 
-        const int getContactId() const
-        {
-                return m_contactId;
-        }
+    const int getContactId() const
+    {
+        return m_contactId;
+    }
 
 private:
-        int m_contactId;
+    int m_contactId;
 };
 
 #endif //REMOVEDBYCONTACTCONTACTJSON_HPP

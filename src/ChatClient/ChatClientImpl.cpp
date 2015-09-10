@@ -24,17 +24,20 @@ ChatClientImpl::ChatClientImpl() :
     p_actionFactory(new JsonActionFactory()),
     p_notificationParser(new JsonNotificationParser())
 {
+    LOG_DEBUG_METHOD;
     p_websocketClient->addListener(this);
 }
 
 ChatClientImpl::~ChatClientImpl()
 {
+    LOG_DEBUG_METHOD;
     p_websocketClient.reset();
 }
 
 void ChatClientImpl::setServer(const std::string& address,
-                             uint16_t           port)
+                               uint16_t           port)
 {
+    LOG_DEBUG_METHOD;
     m_state = INITIAL;
     p_websocketClient->setServer(address, port);
 }
@@ -42,6 +45,7 @@ void ChatClientImpl::setServer(const std::string& address,
 void ChatClientImpl::login(const UserCredentials& userCredentials,
                            USER_STATE             state)
 {
+    LOG_DEBUG_METHOD;
     p_state = new USER_STATE(state);
     p_userCredentials = new UserCredentials(userCredentials);
     if (m_state == CONNECTED ||
@@ -61,6 +65,7 @@ void ChatClientImpl::login(const UserCredentials& userCredentials,
 
 void ChatClientImpl::sendMessage(int receiverId, const std::string& message)
 {
+    LOG_DEBUG_METHOD;
     Message m(message,receiverId);
     IActionObject* action = p_actionFactory->createSendMessageAction(m);
     p_websocketClient->sendText(action->toString());
@@ -68,12 +73,14 @@ void ChatClientImpl::sendMessage(int receiverId, const std::string& message)
 
 void ChatClientImpl::changeState(USER_STATE state)
 {
-   IActionObject* action  = p_actionFactory->createChangeStateAction(state);
+    LOG_DEBUG_METHOD;
+    IActionObject* action = p_actionFactory->createChangeStateAction(state);
     p_websocketClient->sendText(action->toString());
 }
 
 void ChatClientImpl::requestContacts()
 {
+    LOG_DEBUG_METHOD;
     IActionObject* action = p_actionFactory->createRequestContactsAction();
 
     p_websocketClient->sendText(action->toString());
@@ -81,12 +88,14 @@ void ChatClientImpl::requestContacts()
 
 void ChatClientImpl::updateUser(const User& user)
 {
-   IActionObject* action  = p_actionFactory->createUpdateUserAction(user);
+    LOG_DEBUG_METHOD;
+    IActionObject* action = p_actionFactory->createUpdateUserAction(user);
     p_websocketClient->sendText(action->toString());
 }
 
 void ChatClientImpl::registerUser(const User& user)
 {
+    LOG_DEBUG_METHOD;
     p_user = new User(user);
     if (m_state == CONNECTED ||
         m_state == LOG_IN_ERROR)
@@ -104,22 +113,26 @@ void ChatClientImpl::registerUser(const User& user)
 
 void ChatClientImpl::addListener(IChatClientListener* listener)
 {
+    LOG_DEBUG_METHOD;
     m_clientListeners.push_back(listener);
 }
 
 void ChatClientImpl::removeListener(IChatClientListener* listener)
 {
+    LOG_DEBUG_METHOD;
     m_clientListeners.remove(listener);
 }
 
 void ChatClientImpl::disconnect()
 {
+    LOG_DEBUG_METHOD;
     p_websocketClient->closeConnection();
 }
 
 void ChatClientImpl::addContact(const std::string& userName)
 {
-   IActionObject* action =
+    LOG_DEBUG_METHOD;
+    IActionObject* action =
         p_actionFactory->createAddContactAction(userName);
 
     p_websocketClient->sendText(action->toString());
@@ -128,7 +141,8 @@ void ChatClientImpl::addContact(const std::string& userName)
 
 void ChatClientImpl::removeContact(int contactId)
 {
-   IActionObject* action  = p_actionFactory->createRemoveContactAction(
+    LOG_DEBUG_METHOD;
+    IActionObject* action = p_actionFactory->createRemoveContactAction(
         contactId);
 
     p_websocketClient->sendText(action->toString());
@@ -137,6 +151,7 @@ void ChatClientImpl::removeContact(int contactId)
 
 void ChatClientImpl::onTextReceived(const std::string& message)
 {
+    LOG_DEBUG_METHOD;
     p_notificationParser->trySetNotificationString(message);
     NOTIFICATION_TYPE action = p_notificationParser->getNotificationType();
     switch (action)
@@ -145,20 +160,23 @@ void ChatClientImpl::onTextReceived(const std::string& message)
         case NOTIFICATION_LOGIN:
         {
             //            a = p_notificationParser->tryGetLoginResponseAction();
-            handleLoginResponse(p_notificationParser->tryGetLoginResponseNotification());
+            handleLoginResponse(
+                p_notificationParser->tryGetLoginResponseNotification());
             LOG_DEBUG("after resp log\n");
             break;
         }
 
         case NOTIFICATION_GET_CONTACTS:
         {
-            handleReceiveContacts(p_notificationParser->tryGetReceiveContactsNotification());
+            handleReceiveContacts(
+                p_notificationParser->tryGetReceiveContactsNotification());
             break;
         }
 
         case NOTIFICATION_SEND_MESSAGE:
         {
-            handleReceiveMessage(p_notificationParser->tryGetReceiveMessageNotification());
+            handleReceiveMessage(
+                p_notificationParser->tryGetReceiveMessageNotification());
             break;
         }
 
@@ -176,7 +194,7 @@ void ChatClientImpl::onTextReceived(const std::string& message)
                 p_notificationParser->tryGetAddRequestNotification();
             bool accept = handleAddRequest(notification);
 
-           IActionObject* action  =
+            IActionObject* action =
                 p_actionFactory->createAddContactResolutionAction(
                     (notification.getUserName()), accept);
 
@@ -195,7 +213,8 @@ void ChatClientImpl::onTextReceived(const std::string& message)
 
         case NOTIFICATION_REMOVE_CONTACT:
         {
-            handleRemovedByContact(p_notificationParser->tryGetRemovedByContactNotification());
+            handleRemovedByContact(
+                p_notificationParser->tryGetRemovedByContactNotification());
             break;
         }
 
@@ -216,6 +235,7 @@ void ChatClientImpl::onTextReceived(const std::string& message)
 
 void ChatClientImpl::onConnected()
 {
+    LOG_DEBUG_METHOD;
     if (m_state == LOGGING_IN)
     {
         performLogin();
@@ -229,6 +249,7 @@ void ChatClientImpl::onConnected()
 
 void ChatClientImpl::onDisconnected()
 {
+    LOG_DEBUG_METHOD;
     m_state = DISCONNECTED;
     for (auto listener: m_clientListeners)
     {
@@ -238,6 +259,7 @@ void ChatClientImpl::onDisconnected()
 
 void ChatClientImpl::onConnectionError()
 {
+    LOG_DEBUG_METHOD;
     m_state = CONNECTION_ERROR;
     for (auto listener: m_clientListeners)
     {
@@ -247,6 +269,7 @@ void ChatClientImpl::onConnectionError()
 
 void ChatClientImpl::performLogin()
 {
+    LOG_DEBUG_METHOD;
     IActionObject* action = p_actionFactory->createLoginAction(
         *p_userCredentials,*p_state);
     p_websocketClient->sendText(action->toString());
@@ -256,14 +279,17 @@ void ChatClientImpl::performLogin()
 
 void ChatClientImpl::performRegister()
 {
-    IActionObject* action  =
+    LOG_DEBUG_METHOD;
+    IActionObject* action =
         p_actionFactory->createRegisterUserAction(*p_user);
     p_websocketClient->sendText(action->toString());
     delete p_user;
 }
 
-void ChatClientImpl::handleLoginResponse(const LoginResponseNotification& responseAction)
+void ChatClientImpl::handleLoginResponse(
+    const LoginResponseNotification& responseAction)
 {
+    LOG_DEBUG_METHOD;
 
     AUTH_STATUS status = responseAction.getAutheticationStatus();
     if (status == AUTH_SUCCESSFUL)
@@ -288,6 +314,7 @@ void ChatClientImpl::handleLoginResponse(const LoginResponseNotification& respon
 void ChatClientImpl::handleReceiveContacts(
     const ReceiveContactsNotification& responseAction)
 {
+    LOG_DEBUG_METHOD;
     const std::vector<Contact>& contacts = responseAction.getContacts();
     for(Contact contact: contacts)
     {
@@ -300,8 +327,10 @@ void ChatClientImpl::handleReceiveContacts(
     }
 }
 
-void ChatClientImpl::handleReceiveMessage(const ReceiveMessageNotification& responseAction)
+void ChatClientImpl::handleReceiveMessage(
+    const ReceiveMessageNotification& responseAction)
 {
+    LOG_DEBUG_METHOD;
     Message message = responseAction.getMessage();
     LOG_DEBUG("M:%s\n",message.getMessageText().c_str());
     for (auto listener: m_clientListeners)
@@ -313,9 +342,9 @@ void ChatClientImpl::handleReceiveMessage(const ReceiveMessageNotification& resp
 void ChatClientImpl::handleContactStateChanged(
     const ContactStateChangedNotification& responseAction)
 {
+    LOG_DEBUG_METHOD;
     int contactId = responseAction.getContactId();
     USER_STATE contactState = responseAction.getContactState();
-//    LOG_DEBUG("%d %d\n",userId,actionObject);
     for (auto listener: m_clientListeners)
     {
         listener->onContactStateChanged(contactId, contactState);
@@ -325,6 +354,7 @@ void ChatClientImpl::handleContactStateChanged(
 bool ChatClientImpl::handleAddRequest(
     const AddRequestNotification& responseAction)
 {
+    LOG_DEBUG_METHOD;
     bool listenerAccepted = false;
     const std::string& requester = responseAction.getUserName();
     for (IChatClientListener* listener: m_clientListeners)
@@ -341,6 +371,7 @@ bool ChatClientImpl::handleAddRequest(
 void ChatClientImpl::handleAddContactResponse(
     const AddContactResponseNotification& responseAction)
 {
+    LOG_DEBUG_METHOD;
     const std::string& userName = responseAction.getUserName();
     ADD_STATUS status = responseAction.getStatus();
     for (IChatClientListener* listener: m_clientListeners)
@@ -352,6 +383,7 @@ void ChatClientImpl::handleAddContactResponse(
 void ChatClientImpl::handleRemovedByContact(
     const RemovedByContactNotification& responseAction)
 {
+    LOG_DEBUG_METHOD;
     int contactId = responseAction.getContactId();
     for (IChatClientListener* listener: m_clientListeners)
     {
@@ -362,6 +394,7 @@ void ChatClientImpl::handleRemovedByContact(
 void ChatClientImpl::handleRegisterUpdateResponse(
     const RegisterUpdateNotification& responseAction)
 {
+    LOG_DEBUG_METHOD;
     REGISTER_UPDATE_USER_STATUS status = responseAction.getStatus();
     for (IChatClientListener* listener: m_clientListeners)
     {
